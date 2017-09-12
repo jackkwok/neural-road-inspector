@@ -1,6 +1,6 @@
 import numpy as np
 from keras.models import *
-from keras.layers import Input, merge, Conv2D, Convolution2D, MaxPooling2D, UpSampling2D, Cropping2D, ZeroPadding2D, Dropout, Cropping2D, BatchNormalization, Activation
+from keras.layers import Input, concatenate, merge, Conv2D, Convolution2D, MaxPooling2D, UpSampling2D, Cropping2D, ZeroPadding2D, Dropout, Cropping2D, BatchNormalization, Activation
 from keras.optimizers import *
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
 from keras import backend as keras
@@ -61,45 +61,44 @@ class Unet(object):
 	def get_unet(self):
 		inputs = Input((self.img_rows, self.img_cols, self.num_channels))
 
-		conv1 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(inputs)
-		conv1 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(conv1)
+		conv1 = Conv2D(32, (3, 3), padding="same", activation="relu")(inputs)
+		conv1 = Conv2D(32, (3, 3), padding="same", activation="relu")(conv1)
 		pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
 
-		conv2 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')(pool1)
-		conv2 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')(conv2)
+		conv2 = Conv2D(64, (3, 3), padding="same", activation="relu")(pool1)
+		conv2 = Conv2D(64, (3, 3), padding="same", activation="relu")(conv2)
 		pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
 
-		conv3 = Convolution2D(128, 3, 3, activation='relu', border_mode='same')(pool2)
-		conv3 = Convolution2D(128, 3, 3, activation='relu', border_mode='same')(conv3)
+		conv3 = Conv2D(128, (3, 3), padding="same", activation="relu")(pool2)
+		conv3 = Conv2D(128, (3, 3), padding="same", activation="relu")(conv3)
 		pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
 
-		conv4 = Convolution2D(256, 3, 3, activation='relu', border_mode='same')(pool3)
-		conv4 = Convolution2D(256, 3, 3, activation='relu', border_mode='same')(conv4)
+		conv4 = Conv2D(256, (3, 3), padding="same", activation="relu")(pool3)
+		conv4 = Conv2D(256, (3, 3), padding="same", activation="relu")(conv4)
 		pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
 
-		conv5 = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(pool4)
-		conv5 = Convolution2D(512, 3, 3, activation='relu', border_mode='same')(conv5)
+		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu")(pool4)
+		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu")(conv5)
 
-		up6 = merge([UpSampling2D(size=(2, 2))(conv5), conv4], mode='concat', concat_axis=1)
-		conv6 = Convolution2D(256, 3, 3, activation='relu', border_mode='same')(up6)
-		conv6 = Convolution2D(256, 3, 3, activation='relu', border_mode='same')(conv6)
+		up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), conv4], axis=3) # concat_axis=3 for Tensorflow vs 1 for theano
+		conv6 = Conv2D(256, (3, 3), padding="same", activation="relu")(up6)
+		conv6 = Conv2D(256, (3, 3), padding="same", activation="relu")(conv6)
 
-		up7 = merge([UpSampling2D(size=(2, 2))(conv6), conv3], mode='concat', concat_axis=1)
-		conv7 = Convolution2D(128, 3, 3, activation='relu', border_mode='same')(up7)
-		conv7 = Convolution2D(128, 3, 3, activation='relu', border_mode='same')(conv7)
+		up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), conv3], axis=3)
+		conv7 = Conv2D(128, (3, 3), padding="same", activation="relu")(up7)
+		conv7 = Conv2D(128, (3, 3), padding="same", activation="relu")(conv7)
 
-		up8 = merge([UpSampling2D(size=(2, 2))(conv7), conv2], mode='concat', concat_axis=1)
-		conv8 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')(up8)
-		conv8 = Convolution2D(64, 3, 3, activation='relu', border_mode='same')(conv8)
+		up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), conv2], axis=3)
+		conv8 = Conv2D(64, (3, 3), padding="same", activation="relu")(up8)
+		conv8 = Conv2D(64, (3, 3), padding="same", activation="relu")(conv8)
 
-		up9 = merge([UpSampling2D(size=(2, 2))(conv8), conv1], mode='concat', concat_axis=1)
-		conv9 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(up9)
-		conv9 = Convolution2D(32, 3, 3, activation='relu', border_mode='same')(conv9)
+		up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), conv1], axis=3)
+		conv9 = Conv2D(32, (3, 3), padding="same", activation="relu")(up9)
+		conv9 = Conv2D(32, (3, 3), padding="same", activation="relu")(conv9)
 
-		conv10 = Convolution2D(1, 1, 1, activation='sigmoid')(conv9)
+		conv10 = Conv2D(1, (1, 1), activation='sigmoid')(conv9)
 
-		model = Model(input=inputs, output=conv10)
-
+		model = Model(inputs=[inputs], outputs=[conv10])
 		return model
 
 	def get_unet_level_7(self):
@@ -282,19 +281,19 @@ class Unet(object):
 		conv5 = Conv2D(256, (3, 3), padding="same", activation="relu")(pool4)
 		conv5 = Conv2D(256, (3, 3), padding="same", activation="relu")(conv5)
 
-		up6 = merge([UpSampling2D(size=(2, 2))(conv5), conv4], mode='concat', concat_axis=3) # concat_axis depends on Tensorflow vs theano
+		up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), conv4], axis=3) # concat_axis=3 for Tensorflow vs 1 for theano
 		conv6 = Conv2D(128, (3, 3), padding="same", activation="relu")(up6)
 		conv6 = Conv2D(128, (3, 3), padding="same", activation="relu")(conv6)
 
-		up7 = merge([UpSampling2D(size=(2, 2))(conv6), conv3], mode='concat', concat_axis=3)
+		up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), conv3], axis=3)
 		conv7 = Conv2D(64, (3, 3), padding="same", activation="relu")(up7)
 		conv7 = Conv2D(64, (3, 3), padding="same", activation="relu")(conv7)
 
-		up8 = merge([UpSampling2D(size=(2, 2))(conv7), conv2], mode='concat', concat_axis=3)
+		up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), conv2], axis=3)
 		conv8 = Conv2D(32, (3, 3), padding="same", activation="relu")(up8)
 		conv8 = Conv2D(32, (3, 3), padding="same", activation="relu")(conv8)
 
-		up9 = merge([UpSampling2D(size=(2, 2))(conv8), conv1], mode='concat', concat_axis=3)
+		up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), conv1], axis=3)
 		conv9 = Conv2D(16, (3, 3), padding="same", activation="relu")(up9)
 		conv9 = Conv2D(16, (3, 3), padding="same", activation="relu")(conv9)
 
