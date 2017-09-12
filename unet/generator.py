@@ -15,8 +15,8 @@ class CustomImgGenerator(object):
 		self.complete_set_df = self.complete_set_df.sample(frac=1).reset_index(drop=True)
 		sample_count = len(self.complete_set_df)
 		train_split = int(sample_count * 0.80)
-		self.train_set_df = self.complete_set_df.head(train_split)
-		self.validation_set_df = self.complete_set_df.tail(sample_count - train_split)
+		self.train_set_df = self.complete_set_df.head(train_split).reset_index(drop=True)
+		self.validation_set_df = self.complete_set_df.tail(sample_count - train_split).reset_index(drop=True)
 
 	def _normalization(self, im):
 		self._subtract_mean(im)
@@ -41,14 +41,14 @@ class CustomImgGenerator(object):
 		
 		#train_df['img'] = train_df['img'].astype(str)
 
-		start = 0
 		limit = len(train_df.index)
+		#print('size of data set', len(train_df.index)) #3114
 		
-		i = start
+		i = 0
 
 		while True:
-			if i+1 >= limit:
-				i = start
+			if i >= limit:
+				i = 0
 			if i + batch_size > limit:
 				end = limit
 			else:
@@ -56,7 +56,7 @@ class CustomImgGenerator(object):
 
 			x_train_from_src = []
 			y_train_from_src = []
-			for index in range(i, i + batch_size):
+			for index in range(i, end):
 				jpg_filename = train_df.loc[index, 'img']
 				jpg_img_orig = cv2.imread(self.train_dir + jpg_filename)
 
@@ -73,8 +73,8 @@ class CustomImgGenerator(object):
 			x_train_from_src = np.array(x_train_from_src, np.float32)
 			y_train_from_src = np.array(y_train_from_src, np.uint8)
 			y_train_from_src = y_train_from_src.astype(int)
-			print('x_train_from_src shape', x_train_from_src.shape)
-			print('y_train_from_src shape', y_train_from_src.shape)
+			#print('x_train_from_src shape', x_train_from_src.shape)
+			#print('y_train_from_src shape', y_train_from_src.shape)
 			self._normalization(x_train_from_src)
 			#x_train_from_src = x_train_from_src.transpose(0,3,1,2) # theano expects channels come before dims
 			yield x_train_from_src, y_train_from_src
