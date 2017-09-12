@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[7]:
+# In[1]:
 
 import numpy as np
 import pandas as pd
@@ -26,13 +26,13 @@ from unet.maskprocessor import *
 from unet.visualization import *
 
 
-# In[11]:
+# In[2]:
 
 # command line args processing "python RoadSegmentor.py cfg/3.cfg"
 if len(sys.argv) > 1 and '.cfg' in sys.argv[1]:
     config_file = sys.argv[1]
 else:
-    config_file = 'cfg/default.txt'
+    config_file = 'cfg/default.cfg'
 
 print('reading configurations from config file: {}'.format(config_file))
 
@@ -76,7 +76,7 @@ batch_size = settings.getint('model', 'batch_size')
 print('batch size: {}'.format(batch_size))
 
 
-# In[4]:
+# In[3]:
 
 img_gen = CustomImgGenerator(x_data_dir, y_data_dir, data_csv_path)
 
@@ -85,7 +85,7 @@ train_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=False)
 validation_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=True)
 
 
-# In[5]:
+# In[4]:
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 
@@ -108,7 +108,7 @@ reduceLR = ReduceLROnPlateau(monitor='val_loss',
                              epsilon=1e-4)
 
 
-# In[6]:
+# In[5]:
 
 training_start_time = datetime.now()
 
@@ -161,6 +161,6 @@ print('model training complete. time spent: {}'.format(time_spent_trianing))
 
 # In[ ]:
 
-historyFilePath = model_dir + 'traininghistory.png'
-trainingHistoryPlot(historyFilePath, history)
+historyFilePath = model_dir + '{}-{}-train-history.png'.format(model_id, timestr)
+trainingHistoryPlot(historyFilePath, history.history)
 
