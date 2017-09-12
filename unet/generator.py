@@ -7,11 +7,10 @@ from maskprocessor import *
 class CustomImgGenerator(object):
 	""" A Custom Image Generator that generate
 	    training set and validation set with a 8:2 split. """
-	def __init__(self, training_root):
-		self.training_data_root = training_root
-		self.train_dir = self.training_data_root + 'mapbox-sat/'
-		self.train_mask_dir = self.training_data_root + 'mapbox-street/'
-		self.complete_set_df = pd.read_csv(self.train_dir + 'tile_log.csv')
+	def __init__(self, training_x_dir, training_y_dir, csv_path):
+		self.train_dir = training_x_dir
+		self.train_mask_dir = training_y_dir
+		self.complete_set_df = pd.read_csv(csv_path)
 		# shuffle everything in the training set. must reset the dataframe index.
 		self.complete_set_df = self.complete_set_df.sample(frac=1).reset_index(drop=True)
 		sample_count = len(self.complete_set_df)
@@ -61,7 +60,8 @@ class CustomImgGenerator(object):
 				jpg_filename = train_df.loc[index, 'img']
 				jpg_img_orig = cv2.imread(self.train_dir + jpg_filename)
 
-				mask_img_orig = cv2.imread(self.train_mask_dir + jpg_filename)
+				png_filename = os.path.splitext(jpg_filename)[0] + '.png'
+				mask_img_orig = cv2.imread(self.train_mask_dir + png_filename)
 
 				binary_mask = get_street_mask(mask_img_orig)
 
@@ -73,8 +73,8 @@ class CustomImgGenerator(object):
 			x_train_from_src = np.array(x_train_from_src, np.float32)
 			y_train_from_src = np.array(y_train_from_src, np.uint8)
 			y_train_from_src = y_train_from_src.astype(int)
-			#print('x_train_from_src shape', x_train_from_src.shape)
-			#print('y_train_from_src shape', y_train_from_src.shape)
+			print('x_train_from_src shape', x_train_from_src.shape)
+			print('y_train_from_src shape', y_train_from_src.shape)
 			self._normalization(x_train_from_src)
 			#x_train_from_src = x_train_from_src.transpose(0,3,1,2) # theano expects channels come before dims
 			yield x_train_from_src, y_train_from_src

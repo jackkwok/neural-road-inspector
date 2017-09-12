@@ -303,7 +303,6 @@ class Unet(object):
 		model = Model(inputs=[inputs], outputs=[conv10])
 		return model
 
-	# GpuArrayException: out of memory
 	def get_unet_mini_bn(self):
 		inputs = Input((self.img_rows, self.img_cols, self.num_channels))
 
