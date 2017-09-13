@@ -27,6 +27,9 @@ def subtract_mean(img):
 
 # TODO which interpolation mode is best?
 def _resize(img):
+	height, width = img.shape[:2]
+	if height == resize_height and width == resize_width:
+		return img
 	""" resize to input dimensions required by UNet """
 	img = cv2.resize(img, (resize_width, resize_height), interpolation = cv2.INTER_CUBIC)
 	return img
