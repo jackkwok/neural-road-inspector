@@ -2,7 +2,6 @@ import numpy as np
 from keras.models import *
 from keras.optimizers import *
 
-# Import Error with Keras 1.2.2
 #from keras.losses import binary_crossentropy
 
 smooth = 1.
