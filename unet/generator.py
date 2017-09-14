@@ -4,6 +4,8 @@ import cv2
 import os
 from maskprocessor import *
 
+from augmentation import *
+
 class CustomImgGenerator(object):
 	""" A Custom Image Generator that generate
 	    training set and validation set with a 8:2 split. """
@@ -75,6 +77,8 @@ class CustomImgGenerator(object):
 			y_train_from_src = y_train_from_src.astype(int)
 			#print('x_train_from_src shape', x_train_from_src.shape)
 			#print('y_train_from_src shape', y_train_from_src.shape)
+			if not is_Validation:
+			 	x_train_from_src, y_train_from_src = apply_augment_sequence(x_train_from_src, y_train_from_src)
 			self._normalization(x_train_from_src)
 			#x_train_from_src = x_train_from_src.transpose(0,3,1,2) # theano expects channels come before dims
 			yield x_train_from_src, y_train_from_src
