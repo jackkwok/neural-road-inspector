@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 def get_mask(img, target):
-	"""get a binary mask [0, 1] filtered by target color."""
+	"""get a binary mask filtered by target color."""
 	tolerenace = 10
 	mask = cv2.inRange(img, target-tolerenace, target+tolerenace)
 	return (mask != 0)
