@@ -1,0 +1,134 @@
+reading configurations from config file: cfg/ps_unet.cfg
+x_data_dir: /home/paperspace/Data/training/v1/mapbox-sat@2x/
+y_data_dir: /home/paperspace/Data/training/v1/mapbox-st@2x/
+('model configuration options:', [u'id', u'optimizer', u'learning_rate', u'max_epoch', u'batch_size', u'model_dir'])
+model_dir: /home/paperspace/Models/
+model: Unet
+learning rate: 0.0001
+max epoch: 64
+batch size: 16
+____________________________________________________________________________________________________
+Layer (type)                     Output Shape          Param #     Connected to                     
+====================================================================================================
+input_1 (InputLayer)             (None, 512, 512, 3)   0                                            
+____________________________________________________________________________________________________
+conv2d_1 (Conv2D)                (None, 512, 512, 32)  896         input_1[0][0]                    
+____________________________________________________________________________________________________
+conv2d_2 (Conv2D)                (None, 512, 512, 32)  9248        conv2d_1[0][0]                   
+____________________________________________________________________________________________________
+max_pooling2d_1 (MaxPooling2D)   (None, 256, 256, 32)  0           conv2d_2[0][0]                   
+____________________________________________________________________________________________________
+conv2d_3 (Conv2D)                (None, 256, 256, 64)  18496       max_pooling2d_1[0][0]            
+____________________________________________________________________________________________________
+conv2d_4 (Conv2D)                (None, 256, 256, 64)  36928       conv2d_3[0][0]                   
+____________________________________________________________________________________________________
+max_pooling2d_2 (MaxPooling2D)   (None, 128, 128, 64)  0           conv2d_4[0][0]                   
+____________________________________________________________________________________________________
+conv2d_5 (Conv2D)                (None, 128, 128, 128) 73856       max_pooling2d_2[0][0]            
+____________________________________________________________________________________________________
+conv2d_6 (Conv2D)                (None, 128, 128, 128) 147584      conv2d_5[0][0]                   
+____________________________________________________________________________________________________
+max_pooling2d_3 (MaxPooling2D)   (None, 64, 64, 128)   0           conv2d_6[0][0]                   
+____________________________________________________________________________________________________
+conv2d_7 (Conv2D)                (None, 64, 64, 256)   295168      max_pooling2d_3[0][0]            
+____________________________________________________________________________________________________
+conv2d_8 (Conv2D)                (None, 64, 64, 256)   590080      conv2d_7[0][0]                   
+____________________________________________________________________________________________________
+max_pooling2d_4 (MaxPooling2D)   (None, 32, 32, 256)   0           conv2d_8[0][0]                   
+____________________________________________________________________________________________________
+conv2d_9 (Conv2D)                (None, 32, 32, 512)   1180160     max_pooling2d_4[0][0]            
+____________________________________________________________________________________________________
+conv2d_10 (Conv2D)               (None, 32, 32, 512)   2359808     conv2d_9[0][0]                   
+____________________________________________________________________________________________________
+up_sampling2d_1 (UpSampling2D)   (None, 64, 64, 512)   0           conv2d_10[0][0]                  
+____________________________________________________________________________________________________
+concatenate_1 (Concatenate)      (None, 64, 64, 768)   0           up_sampling2d_1[0][0]            
+                                                                   conv2d_8[0][0]                   
+____________________________________________________________________________________________________
+conv2d_11 (Conv2D)               (None, 64, 64, 256)   1769728     concatenate_1[0][0]              
+____________________________________________________________________________________________________
+conv2d_12 (Conv2D)               (None, 64, 64, 256)   590080      conv2d_11[0][0]                  
+____________________________________________________________________________________________________
+up_sampling2d_2 (UpSampling2D)   (None, 128, 128, 256) 0           conv2d_12[0][0]                  
+____________________________________________________________________________________________________
+concatenate_2 (Concatenate)      (None, 128, 128, 384) 0           up_sampling2d_2[0][0]            
+                                                                   conv2d_6[0][0]                   
+____________________________________________________________________________________________________
+conv2d_13 (Conv2D)               (None, 128, 128, 128) 442496      concatenate_2[0][0]              
+____________________________________________________________________________________________________
+conv2d_14 (Conv2D)               (None, 128, 128, 128) 147584      conv2d_13[0][0]                  
+____________________________________________________________________________________________________
+up_sampling2d_3 (UpSampling2D)   (None, 256, 256, 128) 0           conv2d_14[0][0]                  
+____________________________________________________________________________________________________
+concatenate_3 (Concatenate)      (None, 256, 256, 192) 0           up_sampling2d_3[0][0]            
+                                                                   conv2d_4[0][0]                   
+____________________________________________________________________________________________________
+conv2d_15 (Conv2D)               (None, 256, 256, 64)  110656      concatenate_3[0][0]              
+____________________________________________________________________________________________________
+conv2d_16 (Conv2D)               (None, 256, 256, 64)  36928       conv2d_15[0][0]                  
+____________________________________________________________________________________________________
+up_sampling2d_4 (UpSampling2D)   (None, 512, 512, 64)  0           conv2d_16[0][0]                  
+____________________________________________________________________________________________________
+concatenate_4 (Concatenate)      (None, 512, 512, 96)  0           up_sampling2d_4[0][0]            
+                                                                   conv2d_2[0][0]                   
+____________________________________________________________________________________________________
+conv2d_17 (Conv2D)               (None, 512, 512, 32)  27680       concatenate_4[0][0]              
+____________________________________________________________________________________________________
+conv2d_18 (Conv2D)               (None, 512, 512, 32)  9248        conv2d_17[0][0]                  
+____________________________________________________________________________________________________
+conv2d_19 (Conv2D)               (None, 512, 512, 1)   33          conv2d_18[0][0]                  
+====================================================================================================
+Total params: 7,846,657
+Trainable params: 7,846,657
+Non-trainable params: 0
+____________________________________________________________________________________________________
+None
+Epoch 1/64
+Epoch 00000: val_loss improved from inf to -0.36781, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+311s - loss: -3.3217e-01 - acc: 0.7331 - dice_coef: 0.3322 - val_loss: -3.6781e-01 - val_acc: 0.8105 - val_dice_coef: 0.3678
+Epoch 2/64
+Epoch 00001: val_loss improved from -0.36781 to -0.52917, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+296s - loss: -4.3655e-01 - acc: 0.8416 - dice_coef: 0.4366 - val_loss: -5.2917e-01 - val_acc: 0.8821 - val_dice_coef: 0.5292
+Epoch 3/64
+Epoch 00002: val_loss improved from -0.52917 to -0.58915, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+293s - loss: -5.5095e-01 - acc: 0.8871 - dice_coef: 0.5510 - val_loss: -5.8915e-01 - val_acc: 0.8991 - val_dice_coef: 0.5891
+Epoch 4/64
+Epoch 00003: val_loss improved from -0.58915 to -0.61269, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+292s - loss: -5.9268e-01 - acc: 0.8998 - dice_coef: 0.5927 - val_loss: -6.1269e-01 - val_acc: 0.9056 - val_dice_coef: 0.6127
+Epoch 5/64
+Epoch 00004: val_loss improved from -0.61269 to -0.63369, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+292s - loss: -6.1859e-01 - acc: 0.9072 - dice_coef: 0.6186 - val_loss: -6.3369e-01 - val_acc: 0.9105 - val_dice_coef: 0.6337
+Epoch 6/64
+Epoch 00005: val_loss improved from -0.63369 to -0.64432, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+292s - loss: -6.3837e-01 - acc: 0.9128 - dice_coef: 0.6384 - val_loss: -6.4432e-01 - val_acc: 0.9134 - val_dice_coef: 0.6443
+Epoch 7/64
+Epoch 00006: val_loss improved from -0.64432 to -0.65550, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+293s - loss: -6.4984e-01 - acc: 0.9157 - dice_coef: 0.6498 - val_loss: -6.5550e-01 - val_acc: 0.9192 - val_dice_coef: 0.6555
+Epoch 8/64
+Epoch 00007: val_loss improved from -0.65550 to -0.65885, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+292s - loss: -6.6301e-01 - acc: 0.9194 - dice_coef: 0.6630 - val_loss: -6.5885e-01 - val_acc: 0.9188 - val_dice_coef: 0.6588
+Epoch 9/64
+Epoch 00008: val_loss improved from -0.65885 to -0.66257, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+292s - loss: -6.6866e-01 - acc: 0.9208 - dice_coef: 0.6687 - val_loss: -6.6257e-01 - val_acc: 0.9166 - val_dice_coef: 0.6626
+Epoch 10/64
+Epoch 00009: val_loss improved from -0.66257 to -0.66597, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+291s - loss: -6.7352e-01 - acc: 0.9220 - dice_coef: 0.6735 - val_loss: -6.6597e-01 - val_acc: 0.9232 - val_dice_coef: 0.6660
+Epoch 11/64
+Epoch 00010: val_loss improved from -0.66597 to -0.66888, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+291s - loss: -6.7712e-01 - acc: 0.9230 - dice_coef: 0.6771 - val_loss: -6.6888e-01 - val_acc: 0.9205 - val_dice_coef: 0.6689
+Epoch 12/64
+Epoch 00011: val_loss improved from -0.66888 to -0.66997, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+291s - loss: -6.8390e-01 - acc: 0.9249 - dice_coef: 0.6839 - val_loss: -6.6997e-01 - val_acc: 0.9199 - val_dice_coef: 0.6700
+Epoch 13/64
+Epoch 00012: val_loss improved from -0.66997 to -0.67449, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+291s - loss: -6.9251e-01 - acc: 0.9273 - dice_coef: 0.6925 - val_loss: -6.7449e-01 - val_acc: 0.9212 - val_dice_coef: 0.6745
+Epoch 14/64
+Epoch 00013: val_loss improved from -0.67449 to -0.67506, saving model to /home/paperspace/Models/Unet-20170912-192420.hdf5
+291s - loss: -6.9866e-01 - acc: 0.9289 - dice_coef: 0.6987 - val_loss: -6.7506e-01 - val_acc: 0.9231 - val_dice_coef: 0.6751
+Epoch 15/64
+Epoch 00014: val_loss did not improve
+291s - loss: -7.0387e-01 - acc: 0.9301 - dice_coef: 0.7039 - val_loss: -6.6642e-01 - val_acc: 0.9282 - val_dice_coef: 0.6664
+Epoch 16/64
+Epoch 00015: val_loss did not improve
+291s - loss: -7.1074e-01 - acc: 0.9320 - dice_coef: 0.7107 - val_loss: -6.6702e-01 - val_acc: 0.9288 - val_dice_coef: 0.6670
+model training complete. time spent: 1:18:19.793665
