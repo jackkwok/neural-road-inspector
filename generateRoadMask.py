@@ -35,6 +35,10 @@ def _out_file_list(input_file_list, in_dir, out_dir):
 		result.append(file.replace(in_dir, out_dir, 1))
 	return result
 
+def makedirs(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 def genRoadMask(img_path, out_dir, model_path, is_directory = False):
 	"""Given an input image and model, generate and save the Road Mask image to the out_dir"""
 	model = _get_model(model_path)
@@ -58,10 +62,11 @@ def genRoadMask(img_path, out_dir, model_path, is_directory = False):
 	
 	if is_directory:
 		mask = (y > 0.5) # model output are floats and need to be converted to boolean
-		mask.dtype='uint8'
-		mask[mask==1] = 255
+		mask.dtype = 'uint8'
+		mask[mask == 1] = 255
 
 		for index, out_file in enumerate(output_filelist):
+			makedirs(os.path.dirname(out_file))
 			cv2.imwrite(out_file, mask[index])
 	else:
 		mask = (y[0] > 0.5) # model output are floats and need to be converted to boolean
@@ -89,6 +94,7 @@ if len(sys.argv) > 3:
 		sys.exit(0)
 	output_dir = sys.argv[2]
 	output_dir = os.path.join(output_dir, '') # add OS-indepedent slash
+	makedirs(output_dir)
 	model_path = sys.argv[3]
 	if not os.path.isfile(model_path):
 		print('error: model file {} does not exist', model_path)
