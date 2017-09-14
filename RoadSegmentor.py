@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[5]:
 
 import numpy as np
 import pandas as pd
@@ -26,7 +26,7 @@ from unet.maskprocessor import *
 from unet.visualization import *
 
 
-# In[2]:
+# In[6]:
 
 # command line args processing "python RoadSegmentor.py cfg/3.cfg"
 if len(sys.argv) > 1 and '.cfg' in sys.argv[1]:
@@ -76,7 +76,7 @@ batch_size = settings.getint('model', 'batch_size')
 print('batch size: {}'.format(batch_size))
 
 
-# In[3]:
+# In[7]:
 
 img_gen = CustomImgGenerator(x_data_dir, y_data_dir, data_csv_path)
 
@@ -85,9 +85,11 @@ train_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=False)
 validation_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=True)
 
 
-# In[4]:
+# In[8]:
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
+model_filename = model_dir + '{}-{}.hdf5'.format(model_id, timestr)
+print('model filename: {}'.format(model_filename))
 
 # early stopping prevents overfitting on training data
 early_stop = EarlyStopping(monitor='val_loss',
@@ -96,7 +98,7 @@ early_stop = EarlyStopping(monitor='val_loss',
                            verbose=0, 
                            mode='auto')
 
-model_checkpoint = ModelCheckpoint(model_dir + '{}-{}.hdf5'.format(model_id, timestr), 
+model_checkpoint = ModelCheckpoint(model_filename,
                                    monitor='val_loss',
                                    verbose=1,
                                    save_best_only=True)
@@ -105,6 +107,7 @@ reduceLR = ReduceLROnPlateau(monitor='val_loss',
                              factor=0.1,
                              patience=2,
                              verbose=1,
+                             min_lr=0.000001,
                              epsilon=1e-4)
 
 
