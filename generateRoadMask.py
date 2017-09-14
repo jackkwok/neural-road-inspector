@@ -17,30 +17,75 @@ def _get_model(model_path):
 												   'binary_crossentropy_dice_loss': binary_crossentropy_dice_loss})
 	return model
 
-def genRoadMask(img_path, out_dir, model_path):
+def _image_file_list(dir_path):
+	""" limitation: the images files must have an image extension: webp, jpg, png, or jpeg """
+	result = []
+	for root, dirs, files in os.walk(dir_path):
+		for file in files:
+			if file.endswith('.webp') or file.endswith('.png') or file.endswith('.jpg') or file.endswith('.jpeg'):
+				result.append(os.path.join(root, file))
+	return result
+
+def _out_file_list(input_file_list, in_dir, out_dir):
+	out_dir = os.path.join(out_dir, '') # add OS-indepedent slash
+	in_dir = os.path.join(in_dir, '') # add OS-indepedent slash
+
+	result = []
+	for file in input_file_list:
+		result.append(file.replace(in_dir, out_dir, 1))
+	return result
+
+def genRoadMask(img_path, out_dir, model_path, is_directory = False):
 	"""Given an input image and model, generate and save the Road Mask image to the out_dir"""
 	model = _get_model(model_path)
-	img = normalize_img(img_path, resize=True)
-	x = np.expand_dims(img, axis=0)
-	y = model.predict(x, batch_size=1, verbose=1)
+
+	if is_directory:
+		filelist = _image_file_list(img_path)
+		output_filelist = _out_file_list(filelist, img_path, out_dir)
+		x = []
+		for file in filelist:
+			img = normalize_img(file, resize=True)
+			x.append(img)
+		x = np.array(x, np.uint8)
+		batch_size = 4
+	else:
+		img = normalize_img(img_path, resize=True)
+		x = np.expand_dims(img, axis=0)
+		batch_size = 1
+	
+	y = model.predict(x, batch_size=batch_size, verbose=1)
 	#print('y shape', y.shape) # ('y shape', (1, 512, 512, 1))
-	mask = (y[0] > 0.5) # model output are floats and need to be converted to boolean
-	mask.dtype='uint8'
-	mask[mask==1] = 255
-	#print('mask shape', mask.shape)
-	img_filename = ntpath.basename(img_path)
+	
+	if is_directory:
+		mask = (y > 0.5) # model output are floats and need to be converted to boolean
+		mask.dtype='uint8'
+		mask[mask==1] = 255
 
-	file_no_ext, file_ext = os.path.splitext(img_path)
-	if file_ext == '':
-		img_filename = img_filename + '.jpg'
+		for index, out_file in enumerate(output_filelist):
+			cv2.imwrite(out_file, mask[index])
+	else:
+		mask = (y[0] > 0.5) # model output are floats and need to be converted to boolean
+		mask.dtype='uint8'
+		mask[mask==1] = 255
+		#print('mask shape', mask.shape)
+		img_filename = ntpath.basename(img_path)
 
-	cv2.imwrite(out_dir + img_filename, mask)
+		file_no_ext, file_ext = os.path.splitext(img_path)
+		if file_ext == '':
+			img_filename = img_filename + '.jpg'
+
+		cv2.imwrite(out_dir + img_filename, mask)
 
 # execution starts here. command line args processing.
 if len(sys.argv) > 3:
 	input_file_path = sys.argv[1]
-	if not os.path.isfile(input_file_path):
-		print('error: input image file {} does not exist', input_file_path)
+	# input_file_path is allowed to be a single file or a directory
+	if os.path.isdir(input_file_path):
+		is_directory = True;
+	elif os.path.isfile(input_file_path):
+		is_directory = False;
+	else:
+		print('error: input image path {} does not exist', input_file_path)
 		sys.exit(0)
 	output_dir = sys.argv[2]
 	output_dir = os.path.join(output_dir, '') # add OS-indepedent slash
@@ -48,9 +93,9 @@ if len(sys.argv) > 3:
 	if not os.path.isfile(model_path):
 		print('error: model file {} does not exist', model_path)
 		sys.exit(0)
-	genRoadMask(input_file_path, output_dir, model_path)
+	genRoadMask(input_file_path, output_dir, model_path, is_directory = is_directory)
 else:
-	print ('error: required command line argument missing. e.g. python generateRoadMask.py input.png /home/output/ /home/models/model.hdf5')
+	print ('error: required command line argument missing. Syntax: python generateRoadMask.py <input> <output_dir> <keras_model_filepath>')
 	sys.exit(0)
 
 
