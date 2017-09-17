@@ -7,7 +7,9 @@ from tqdm import tqdm
 
 #filepath = '/Users/jkwok/Documents/Insight/digital_globe/3021113.tif'
 #filepath = '/Users/jkwok/Documents/Insight/jupyter/data/3020110.tif'
-filepath = '/Users/jkwok/Documents/Insight/jupyter/data/3020121.tif'
+#filepath = '/Users/jkwok/Documents/Insight/jupyter/data/3020121.tif'
+#filepath = '/Users/jkwok/Documents/Insight/jupyter/data/3020130.tif'
+filepath = '/Users/jkwok/Documents/Insight/jupyter/data/3020132.tif'
 
 filename = filepath.split('/')[-1]
 

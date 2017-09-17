@@ -32,7 +32,8 @@ from unet.visualization import *
 if len(sys.argv) > 1 and '.cfg' in sys.argv[1]:
     config_file = sys.argv[1]
 else:
-    config_file = 'cfg/default.cfg'
+    print('missing argument. please provide config file as argument. syntax: python RoadSegmentor.py <config_file>')
+    exit(0)
 
 print('reading configurations from config file: {}'.format(config_file))
 
@@ -89,13 +90,15 @@ validation_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=True)
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 model_filename = model_dir + '{}-{}.hdf5'.format(model_id, timestr)
-print('model filename: {}'.format(model_filename))
+print('model checkpoint file path: {}'.format(model_filename))
 
-# early stopping prevents overfitting on training data
+# Early stopping prevents overfitting on training data
+# Make sure the patience value for EarlyStopping > patience value for ReduceLROnPlateau. 
+# Otherwise ReduceLROnPlateau will never be called.
 early_stop = EarlyStopping(monitor='val_loss',
-                           patience=1,
+                           patience=3,
                            min_delta=0, 
-                           verbose=0, 
+                           verbose=1,
                            mode='auto')
 
 model_checkpoint = ModelCheckpoint(model_filename,

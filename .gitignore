@@ -4,6 +4,10 @@ __pycache__/
 *$py.class
 *.pyc
 
+# geotiff files are GBs in size
+*.tif
+*.tiff
+
 # C extensions
 *.so
 
