@@ -158,7 +158,7 @@ history = model.fit_generator(generator=train_gen,
                               validation_data=validation_gen,
                               validation_steps=np.ceil(float(number_validations) / float(batch_size)),
                               epochs=max_number_epoch,
-                              verbose=2,
+                              verbose=0,
                               callbacks=[model_checkpoint, early_stop, reduceLR])
 
 time_spent_trianing = datetime.now() - training_start_time
