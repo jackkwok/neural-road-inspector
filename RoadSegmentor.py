@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[5]:
+# In[1]:
 
 import numpy as np
 import pandas as pd
@@ -26,14 +26,17 @@ from unet.maskprocessor import *
 from unet.visualization import *
 
 
-# In[6]:
+# This notebook runs the model training.  It takes the config file via command line parameter.  If run this notebook directly, please manually set config_file to point to your configuration file.  See cfg/*.cfg for examples.
+
+# In[4]:
 
 # command line args processing "python RoadSegmentor.py cfg/3.cfg"
 if len(sys.argv) > 1 and '.cfg' in sys.argv[1]:
     config_file = sys.argv[1]
 else:
-    print('missing argument. please provide config file as argument. syntax: python RoadSegmentor.py <config_file>')
-    exit(0)
+    config_file = 'cfg/default.cfg'
+    #print('missing argument. please provide config file as argument. syntax: python RoadSegmentor.py <config_file>')
+    #exit(0)
 
 print('reading configurations from config file: {}'.format(config_file))
 
@@ -77,7 +80,7 @@ batch_size = settings.getint('model', 'batch_size')
 print('batch size: {}'.format(batch_size))
 
 
-# In[7]:
+# In[5]:
 
 img_gen = CustomImgGenerator(x_data_dir, y_data_dir, data_csv_path)
 
@@ -86,7 +89,7 @@ train_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=False)
 validation_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=True)
 
 
-# In[8]:
+# In[6]:
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 model_filename = model_dir + '{}-{}.hdf5'.format(model_id, timestr)
@@ -114,7 +117,7 @@ reduceLR = ReduceLROnPlateau(monitor='val_loss',
                              epsilon=1e-4)
 
 
-# In[5]:
+# In[7]:
 
 training_start_time = datetime.now()
 
@@ -151,7 +154,7 @@ model.compile(optimizer = optimizer,
               metrics = ['accuracy', dice_coef])
 
 
-# In[6]:
+# In[ ]:
 
 history = model.fit_generator(generator=train_gen,
                               steps_per_epoch=np.ceil(float(samples_per_epoch) / float(batch_size)),

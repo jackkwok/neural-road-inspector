@@ -25,6 +25,7 @@ class Unet(object):
 			'Unet_Mini': self.get_unet_mini,
 			'Unet_Level7': self.get_unet_level_7,
 			'Unet_Level8': self.get_unet_level_8,
+			'Unet_Dilated': self.get_unet_dilated,
 		}
 		return model_dict[model_id]()
 
@@ -76,6 +77,54 @@ class Unet(object):
 
 		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu")(pool4)
 		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu")(conv5)
+
+		up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), conv4], axis=3) # concat_axis=3 for Tensorflow vs 1 for theano
+		conv6 = Conv2D(256, (3, 3), padding="same", activation="relu")(up6)
+		conv6 = Conv2D(256, (3, 3), padding="same", activation="relu")(conv6)
+
+		up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), conv3], axis=3)
+		conv7 = Conv2D(128, (3, 3), padding="same", activation="relu")(up7)
+		conv7 = Conv2D(128, (3, 3), padding="same", activation="relu")(conv7)
+
+		up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), conv2], axis=3)
+		conv8 = Conv2D(64, (3, 3), padding="same", activation="relu")(up8)
+		conv8 = Conv2D(64, (3, 3), padding="same", activation="relu")(conv8)
+
+		up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), conv1], axis=3)
+		conv9 = Conv2D(32, (3, 3), padding="same", activation="relu")(up9)
+		conv9 = Conv2D(32, (3, 3), padding="same", activation="relu")(conv9)
+
+		conv10 = Conv2D(1, (1, 1), activation='sigmoid')(conv9)
+
+		model = Model(inputs=[inputs], outputs=[conv10])
+		return model
+
+	def get_unet_dilated(self):
+		"""
+			Generate `dilated U-Net' model where the convolutions in the encoding and
+    		bottleneck are replaced by dilated convolutions. The second convolution in
+    		pair at a given scale in the encoder is dilated by 2.
+		"""
+		inputs = Input((self.img_rows, self.img_cols, self.num_channels))
+
+		conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(inputs)
+		conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv1)
+		pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+
+		conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool1)
+		conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv2)
+		pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+
+		conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool2)
+		conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv3)
+		pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+
+		conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool3)
+		conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv4)
+		pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+
+		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool4)
+		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv5)
 
 		up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), conv4], axis=3) # concat_axis=3 for Tensorflow vs 1 for theano
 		conv6 = Conv2D(256, (3, 3), padding="same", activation="relu")(up6)
