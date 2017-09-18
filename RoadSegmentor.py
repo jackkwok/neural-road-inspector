@@ -131,8 +131,7 @@ unet = Unet(num_channels = 3,
 
 if model_file is not None:
     model = load_model(model_dir + model_file,
-                  custom_objects={'AdamAccumulate': AdamAccumulate, 
-                                  'dice_coef_loss': dice_coef_loss, 
+                  custom_objects={'dice_coef_loss': dice_coef_loss, 
                                   'dice_coef': dice_coef, 
                                   'binary_crossentropy_dice_loss': binary_crossentropy_dice_loss})
 else:
@@ -142,8 +141,6 @@ print(model.summary())
 
 if optimizer_label == 'Adam':
     optimizer = Adam(lr = learning_rate)
-elif optimizer_label == 'AdamAccumulate':
-    optimizer = AdamAccumulate(lr = learning_rate, accum_iters = effective_batch_size)
 elif optimizer_label == 'RMSprop':
     optimizer = RMSprop(lr = learning_rate)
 else:
