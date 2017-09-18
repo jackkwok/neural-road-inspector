@@ -48,9 +48,11 @@ def genRoadMask(img_path, out_dir, model_path, is_directory = False):
 		output_filelist = _out_file_list(filelist, img_path, out_dir)
 		x = []
 		for file in filelist:
+			print(file)
 			img = normalize_img(file, resize=True)
+			print(img.shape)
 			x.append(img)
-		x = np.array(x, np.uint8)
+		x = np.array(x, np.float32)
 		batch_size = 4
 	else:
 		img = normalize_img(img_path, resize=True)
@@ -100,6 +102,8 @@ if len(sys.argv) > 3:
 		print('error: model file {} does not exist', model_path)
 		sys.exit(0)
 	genRoadMask(input_file_path, output_dir, model_path, is_directory = is_directory)
+elif len(sys.argv) == 2 and sys.argv[1] == '-h':
+	print('******************** \n\n Usage: \n\n python generateRoadMask.py <input> <output_dir> <keras_model_filepath>\n\n   Limitions: input images must have 3 channels only (images with alpha channel not supported) \n\n********************')
 else:
 	print ('error: required command line argument missing. Syntax: python generateRoadMask.py <input> <output_dir> <keras_model_filepath>')
 	sys.exit(0)
