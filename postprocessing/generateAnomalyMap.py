@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
-def get_diff(pre_mask_path, post_mask_path):
+def _get_diff(pre_mask_path, post_mask_path):
 	pre_mask = cv2.imread(pre_mask_path)
 	# taking care of antialiasing/interpolations in the mask image
 	pre_mask[pre_mask > 126] = 255
@@ -14,11 +14,17 @@ def get_diff(pre_mask_path, post_mask_path):
 	post_mask[post_mask > 126] = 255
 	post_mask[post_mask <= 126] = 0
 
+	# Apply mathematically morphology to reduce false positive
+	# dilate the post_path or erode the pre_path
+	kernel = np.ones((3,3), np.uint8)
+	pre_mask = cv2.erode(pre_mask, kernel, iterations=1)
+	post_mask = cv2.dilate(post_mask, kernel, iterations=1)
+
 	anomaly_mask = pre_mask - post_mask
 	anomaly_mask[anomaly_mask != 255] = 0 # takes care of negative values
 	return anomaly_mask
 
-def add_alpha_channel_mask(img, alpha=0.80):
+def _add_alpha_channel_mask(img, alpha=0.80):
 	"""
 		params:
 		img: the source image which has black or white colored pixels only.
@@ -29,7 +35,7 @@ def add_alpha_channel_mask(img, alpha=0.80):
 	alpha_channel[r_channel > 126] = int(255 * alpha)
 	return cv2.merge((b_channel, g_channel, r_channel, alpha_channel)) 
 
-def colorize_mask(bgra_img):
+def _colorize_mask(bgra_img):
 	"""
 		bgra_img: 4 channel images which has black or white colored pixels only.
 		colorize (red) all pixels which are not black color: (0,0,0)
@@ -41,12 +47,10 @@ def colorize_mask(bgra_img):
 	r_channel[r_channel > 126] = 255
 	return cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
 
-# TODO: Apply mathematically morphology to reduce noise
-# dilate the post_path or erode the pre_path?
 # TODO: Thresholding?
 def generate_anomaly_img(pre_path, post_path):
-	diff_img = get_diff(pre_path, post_path)
-	return colorize_mask(add_alpha_channel_mask(diff_img))
+	diff_img = _get_diff(pre_path, post_path)
+	return _colorize_mask(_add_alpha_channel_mask(diff_img))
 
 def makedirs(path):
 	if not os.path.exists(path):
@@ -71,12 +75,11 @@ def generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, output_dir):
 			# must save in a format that supports alpha transparency (e.g. PNG or WEBP)
 			output_file = os.path.splitext(output_file)[0]+'.png'
 			print('output file: {}'.format(output_file))
-			#cv2.imshow('image', anomaly_img)
+			makedirs(os.path.dirname(output_file))
 			cv2.imwrite(output_file, anomaly_img, [cv2.IMWRITE_PNG_COMPRESSION, 9]) # max compression
-			#cv2.waitKey(0)
 		else:
-			print('missing image in post-mask dir: {}'.format(post_file))
-	print('complete')
+			print('no matching post image: {}'.format(post_file))
+	print('map generation complete')
 
 # execution starts here. command line args processing.
 if len(sys.argv) > 3:
