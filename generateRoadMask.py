@@ -73,7 +73,7 @@ def genRoadMask(img_path, out_dir, model_path, is_directory = False):
 	else:
 		mask = (y[0] > 0.5) # model output are floats and need to be converted to boolean
 		mask.dtype='uint8'
-		mask[mask==1] = 255
+		mask[mask == 1] = 255
 		#print('mask shape', mask.shape)
 		img_filename = ntpath.basename(img_path)
 
