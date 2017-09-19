@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	
+	<title>Quick Start - Leaflet</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+	
+</head>
+<body>
+
+<div id="mapid" style="width: 1200px; height: 800px;"></div>
+<script>
+	//-95.1,29.8,-95.0,29.9
+	var mymap = L.map('mapid').setView([29.85, -95.05], 16);
+
+	mymap.options.maxZoom = 16;
+	mymap.options.minZoom = 16;
+
+	var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.satellite',
+		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg'
+	});
+	satellite.addTo(mymap);
+
+	var street = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.streets',
+		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg'
+	});
+
+	// Post Hurrican Satellite Imagery
+	var post_hurricane = L.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.jpg?access_token={accessToken}', {
+		minZoom: 16,
+		maxZoom: 16,
+		id: 'jackkwok.digitalglobe_harvey_3020132_tif',
+		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg',
+		attribution: 'DigitalGlobe  <a href="https://www.digitalglobe.com/opendata/hurricane-irma/license">License</a>',
+	});
+
+	// TODO set bounds: to avoid hitting AWS S3 necessarily.
+	var inspector = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/anomaly_mask/{z}/{x}/{y}.png', {
+		minZoom: 16,
+		maxZoom: 16,
+		attribution: 'TODO',
+	});
+	inspector.addTo(mymap);
+
+	var baseMaps = {
+    	"Satelllite Base Map": satellite,
+    	"Street Base Map": street,
+    	"Post Harvey Satellite": post_hurricane,
+	};
+
+	var overlayMaps = {
+	    "Road Inspector": inspector,
+	};
+
+	L.control.layers(baseMaps, overlayMaps).addTo(mymap);
+
+	var popup = L.popup();
+
+	function onMapClick(e) {
+		popup
+			.setLatLng(e.latlng)
+			.setContent("You clicked the map at " + e.latlng.toString())
+			.openOn(mymap);
+	}
+
+	mymap.on('click', onMapClick);
+
+</script>
+
+
+
+</body>
+</html>
