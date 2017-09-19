@@ -21,8 +21,8 @@
 	//-95.1,29.8,-95.0,29.9
 	var mymap = L.map('mapid').setView([29.85, -95.05], 16);
 
-	mymap.options.maxZoom = 16;
-	mymap.options.minZoom = 16;
+	mymap.options.maxZoom = 18;
+	mymap.options.minZoom = 12;
 
 	var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
 		maxZoom: 18,
@@ -45,8 +45,8 @@
 
 	// Post Hurrican Satellite Imagery
 	var post_hurricane = L.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.jpg?access_token={accessToken}', {
-		minZoom: 16,
-		maxZoom: 16,
+		minNativeZoom: 16,
+		maxNativeZoom: 16,
 		id: 'jackkwok.digitalglobe_harvey_3020132_tif',
 		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg',
 		attribution: 'DigitalGlobe  <a href="https://www.digitalglobe.com/opendata/hurricane-irma/license">License</a>',
@@ -54,8 +54,8 @@
 
 	// TODO set bounds: to avoid hitting AWS S3 necessarily.
 	var inspector = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/anomaly_mask/{z}/{x}/{y}.png', {
-		minZoom: 16,
-		maxZoom: 16,
+		minNativeZoom: 16,
+		maxNativeZoom: 16,
 		attribution: 'TODO',
 	});
 	inspector.addTo(mymap);
