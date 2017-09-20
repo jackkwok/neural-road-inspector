@@ -9,9 +9,16 @@ from keras import backend as keras
 K.set_image_dim_ordering('tf')  # Tensorflow dimension ordering
 
 class Unet(object):
-	def __init__(self, num_channels=3, img_rows = 256, img_cols = 256):
+	def __init__(self, num_channels = 3, img_rows = 256, img_cols = 256):
 		"""
-		Both row and col dimensions should be multiple of 2^4.  Otherwise, we will see errors from concatenate layer.
+		Parameters:
+			num_channels: the total number of channels for the data (e.g. for images, it would be 3 for RGB and 4 for RGBA)
+			img_rows: number of rows for the image (height)
+			img_cols: number of columns for the image (width)
+
+		Limitation:
+		For most models:
+		row and col dimensions should be multiples of 2.  Otherwise, we will see errors from concatenate layer.
 			ValueError: "concat" mode can only concatenate layers with matching output shapes except for the concat axis.
 			Layer shapes: [(None, 512, 160, 238), (None, 256, 160, 239)]
 		"""
@@ -26,6 +33,7 @@ class Unet(object):
 			'Unet_Level7': self.get_unet_level_7,
 			'Unet_Level8': self.get_unet_level_8,
 			'Unet_Dilated': self.get_unet_dilated,
+			'Unet_Dilated_D6': self.get_unet_dilated_d6,
 		}
 		return model_dict[model_id]()
 
@@ -145,6 +153,62 @@ class Unet(object):
 		conv10 = Conv2D(1, (1, 1), activation='sigmoid')(conv9)
 
 		model = Model(inputs=[inputs], outputs=[conv10])
+		return model
+
+	def get_unet_dilated_d6(self):
+		"""
+			Generate `dilated U-Net' model where the convolutions in the encoding and
+    		bottleneck are replaced by dilated convolutions. The second convolution in
+    		pair at a given scale in the encoder is dilated by 2.
+		"""
+		inputs = Input((self.img_rows, self.img_cols, self.num_channels))
+
+		conv0 = Conv2D(32, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(inputs)
+		conv0 = Conv2D(32, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv0)
+		pool0 = MaxPooling2D(pool_size=(2, 2))(conv0)
+
+		conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool0)
+		conv1 = Conv2D(32, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv1)
+		pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
+
+		conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool1)
+		conv2 = Conv2D(64, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv2)
+		pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+
+		conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool2)
+		conv3 = Conv2D(128, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv3)
+		pool3 = MaxPooling2D(pool_size=(2, 2))(conv3)
+
+		conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool3)
+		conv4 = Conv2D(256, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv4)
+		pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+
+		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", dilation_rate=(1, 1))(pool4)
+		conv5 = Conv2D(512, (3, 3), padding="same", activation="relu", dilation_rate=(2, 2))(conv5)
+
+		up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), conv4], axis=3) # concat_axis=3 for Tensorflow vs 1 for theano
+		conv6 = Conv2D(256, (3, 3), padding="same", activation="relu")(up6)
+		conv6 = Conv2D(256, (3, 3), padding="same", activation="relu")(conv6)
+
+		up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), conv3], axis=3)
+		conv7 = Conv2D(128, (3, 3), padding="same", activation="relu")(up7)
+		conv7 = Conv2D(128, (3, 3), padding="same", activation="relu")(conv7)
+
+		up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), conv2], axis=3)
+		conv8 = Conv2D(64, (3, 3), padding="same", activation="relu")(up8)
+		conv8 = Conv2D(64, (3, 3), padding="same", activation="relu")(conv8)
+
+		up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), conv1], axis=3)
+		conv9 = Conv2D(32, (3, 3), padding="same", activation="relu")(up9)
+		conv9 = Conv2D(32, (3, 3), padding="same", activation="relu")(conv9)
+
+		up10 = concatenate([UpSampling2D(size=(2, 2))(conv9), conv0], axis=3)
+		conv10 = Conv2D(32, (3, 3), padding="same", activation="relu")(up10)
+		conv10 = Conv2D(32, (3, 3), padding="same", activation="relu")(conv10)
+
+		conv11 = Conv2D(1, (1, 1), activation='sigmoid')(conv10)
+
+		model = Model(inputs=[inputs], outputs=[conv11])
 		return model
 
 	def get_unet_level_7(self):

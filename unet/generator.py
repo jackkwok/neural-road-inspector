@@ -7,8 +7,10 @@ from maskprocessor import *
 from augmentation import *
 
 class CustomImgGenerator(object):
-	""" A Custom Image Generator that generate
-	    training set and validation set with a 8:2 split. """
+	""" 
+		A Custom Image Generator that generate
+	    training set and validation set with a 8:2 split. 
+	"""
 	def __init__(self, training_x_dir, training_y_dir, csv_path):
 		self.train_dir = training_x_dir
 		self.train_mask_dir = training_y_dir
