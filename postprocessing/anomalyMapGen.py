@@ -20,6 +20,9 @@ def _get_diff(pre_mask_path, post_mask_path):
 	pre_mask = cv2.erode(pre_mask, kernel, iterations=1)
 	post_mask = cv2.dilate(post_mask, kernel, iterations=1)
 
+	# TODO: Due to misalignment between pre and post images, we run RANSAC alignment to correct the position.
+	# RANSAC: https://en.wikipedia.org/wiki/Random_sample_consensus
+	# Question: run algo on source satellite images or their masks?
 	anomaly_mask = pre_mask - post_mask
 	anomaly_mask[anomaly_mask != 255] = 0 # takes care of negative values
 	return anomaly_mask
@@ -48,7 +51,16 @@ def _colorize_mask(bgra_img):
 	return cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
 
 # TODO: Thresholding?
+# Strutural Similarly Measure: http://www.pyimagesearch.com/2014/09/15/python-compare-two-images/
 def generate_anomaly_img(pre_path, post_path):
+	"""
+	Parameters:
+		pre_path: file path to the pre event segmentation image
+		post_path: file path to the post event segmentation image
+
+	Returns:
+		Image with anomaly annotation to be used in a map overlay.
+	"""
 	diff_img = _get_diff(pre_path, post_path)
 	return _colorize_mask(_add_alpha_channel_mask(diff_img))
 
@@ -79,7 +91,7 @@ def generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, output_dir):
 			cv2.imwrite(output_file, anomaly_img, [cv2.IMWRITE_PNG_COMPRESSION, 9]) # max compression
 		else:
 			print('no matching post image: {}'.format(post_file))
-	print('map generation complete')
+	print('map tiles generation complete')
 
 # execution starts here. command line args processing.
 if len(sys.argv) > 3:
@@ -101,6 +113,6 @@ if len(sys.argv) > 3:
 	makedirs(output_dir)
 	generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, output_dir)
 else:
-	print ('error: required command line argument missing. Syntax: python generateAnomalyMap.py <pre_dir> <post_dir> <output_dir>')
+	print ('error: required command line argument missing. Syntax: python anomalyMapGen.py <pre_dir> <post_dir> <output_dir>')
 	sys.exit(0)
 

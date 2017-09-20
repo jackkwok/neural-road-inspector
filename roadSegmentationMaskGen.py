@@ -36,8 +36,8 @@ def _out_file_list(input_file_list, in_dir, out_dir):
 	return result
 
 def makedirs(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+	if not os.path.exists(path):
+		os.makedirs(path)
 
 def genRoadMask(img_path, out_dir, model_path, is_directory = False):
 	"""Given an input image and model, generate and save the Road Mask image to the out_dir"""
@@ -103,9 +103,9 @@ if len(sys.argv) > 3:
 		sys.exit(0)
 	genRoadMask(input_file_path, output_dir, model_path, is_directory = is_directory)
 elif len(sys.argv) == 2 and sys.argv[1] == '-h':
-	print('******************** \n\n Usage: \n\n python generateRoadMask.py <input> <output_dir> <keras_model_filepath>\n\n   Limitions: input images must have 3 channels only (images with alpha channel not supported) \n\n********************')
+	print('******************** \n\n Usage: \n\n python roadSegmentationMaskGen.py <satellite_images_dir> <output_dir> <keras_model_filepath>\n\n   Limitions: input images must have 3 channels only (images with alpha channel not supported) \n\n********************')
 else:
-	print ('error: required command line argument missing. Syntax: python generateRoadMask.py <input> <output_dir> <keras_model_filepath>')
+	print ('error: required command line argument missing. Syntax: python roadSegmentationMaskGen.py <satellite_images_dir> <output_dir> <keras_model_filepath>')
 	sys.exit(0)
 
 
