@@ -4,6 +4,12 @@ import cv2
 import numpy as np
 from tqdm import tqdm
 
+def _realign_post_mask(img):
+	# (digitalglobe post-harvey) needs to be shifted about 6 pixels to the left and 6 pixels to the bottom to match img1.
+	warp_matrix = np.float32([[1,0,6],[0,1,-6]])
+	rows,cols,channels = img.shape
+	return cv2.warpAffine(img, warp_matrix, (cols,rows), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP);
+
 def _get_diff(pre_mask_path, post_mask_path):
 	pre_mask = cv2.imread(pre_mask_path)
 	# taking care of antialiasing/interpolations in the mask image
@@ -20,18 +26,23 @@ def _get_diff(pre_mask_path, post_mask_path):
 	pre_mask = cv2.erode(pre_mask, kernel, iterations=1)
 	post_mask = cv2.dilate(post_mask, kernel, iterations=1)
 
-	# TODO: Due to misalignment between pre and post images, we run RANSAC alignment to correct the position.
-	# RANSAC: https://en.wikipedia.org/wiki/Random_sample_consensus
-	# Question: run algo on source satellite images or their masks?
+	# Due to misalignment between pre and post images, we run ECC alignment to align the images.
+	# Ran ECC algo on source satellite images and we will hardcode the realignment for now.
+	# TODO: remove hardcoding.
+	post_mask = _realign_post_mask(post_mask)
+
 	anomaly_mask = pre_mask - post_mask
 	anomaly_mask[anomaly_mask != 255] = 0 # takes care of negative values
 	return anomaly_mask
 
 def _add_alpha_channel_mask(img, alpha=0.80):
 	"""
-		params:
+	Parameters:
 		img: the source image which has black or white colored pixels only.
 		alpha: the alpha transparency [0.0, 1.0]
+
+	Returns:
+		An image with BGRA channels, in that order.
 	"""
 	b_channel, g_channel, r_channel = cv2.split(img)
 	alpha_channel = np.zeros(b_channel.shape, dtype=b_channel.dtype)
@@ -113,6 +124,6 @@ if len(sys.argv) > 3:
 	makedirs(output_dir)
 	generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, output_dir)
 else:
-	print ('error: required command line argument missing. Syntax: python anomalyMapGen.py <pre_dir> <post_dir> <output_dir>')
+	print ('error: required command line argument missing. Syntax: python anomalyMapGen.py <pre_event_segment_dir> <post_event_segment_dir> <output_dir>')
 	sys.exit(0)
 

@@ -42,11 +42,9 @@ class CustomImgGenerator(object):
 			train_df = self.validation_set_df
 		else:
 			train_df = self.train_set_df
-		
-		#train_df['img'] = train_df['img'].astype(str)
 
 		limit = len(train_df.index)
-		#print('size of data set', len(train_df.index)) #3114
+		#print('size of data set', len(train_df.index))
 		
 		i = 0
 
@@ -70,6 +68,9 @@ class CustomImgGenerator(object):
 				binary_mask = get_street_mask(mask_img_orig)
 
 				expanded_binary_mask = np.expand_dims(binary_mask, axis=2) # tensorflow expects channels to come after dims
+
+				if not is_Validation:
+					jpg_img_orig = random_gaussian_blur(jpg_img_orig)
 
 				x_train_from_src.append(jpg_img_orig)
 				y_train_from_src.append(expanded_binary_mask)

@@ -53,12 +53,18 @@
 	});
 
 	// TODO set bounds: to avoid hitting AWS S3 necessarily.
-	var inspector = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/anomaly_mask/{z}/{x}/{y}.png', {
+	var inspector = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/anomaly_mask_v2/{z}/{x}/{y}.png', {
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		attribution: 'TODO',
 	});
 	inspector.addTo(mymap);
+
+	var post_road_seg_mask = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/jackkwok.digitalglobe_harvey_3020132_tif_mask/{z}/{x}/{y}.jpg', {
+		minNativeZoom: 16,
+		maxNativeZoom: 16,
+		attribution: 'TODO',
+	});
 
 	var baseMaps = {
     	"Satelllite Base Map": satellite,
@@ -68,6 +74,7 @@
 
 	var overlayMaps = {
 	    "Road Inspector": inspector,
+	    "Post Harvey Roads": post_road_seg_mask,
 	};
 
 	L.control.layers(baseMaps, overlayMaps).addTo(mymap);
