@@ -3,7 +3,7 @@
 <html>
 <head>
 	
-	<title>Quick Start - Leaflet</title>
+	<title>Hurricane Harvey - Road Inspector</title>
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,14 +53,27 @@
 	});
 
 	// TODO set bounds: to avoid hitting AWS S3 necessarily.
-	var inspector = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/anomaly_mask_v2/{z}/{x}/{y}.png', {
+	// https://gis.stackexchange.com/questions/69738/leafletjs-load-tile-layer-based-on-bounding-box
+	var inspector = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/anomaly_mask_v141812/{z}/{x}/{y}.png', {
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		attribution: 'TODO',
 	});
 	inspector.addTo(mymap);
 
-	var post_road_seg_mask = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/jackkwok.digitalglobe_harvey_3020132_tif_mask/{z}/{x}/{y}.jpg', {
+	var pre_road_seg_mask = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/mapbox_sat_mask/{z}/{x}/{y}.jpg', {
+		minNativeZoom: 16,
+		maxNativeZoom: 16,
+		attribution: 'TODO',
+	});
+
+	var post_road_seg_mask_223544 = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/jackkwok.digitalglobe_harvey_3020132_tif_mask/{z}/{x}/{y}.jpg', {
+		minNativeZoom: 16,
+		maxNativeZoom: 16,
+		attribution: 'TODO',
+	});
+
+	var post_road_seg_mask_141812 = L.tileLayer('file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/141812_post_mask/{z}/{x}/{y}.jpg', {
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		attribution: 'TODO',
@@ -74,7 +87,8 @@
 
 	var overlayMaps = {
 	    "Road Inspector": inspector,
-	    "Post Harvey Roads": post_road_seg_mask,
+	    "Pre Harvey Roads": pre_road_seg_mask,
+	    "Post Harvey Roads": post_road_seg_mask_141812,
 	};
 
 	L.control.layers(baseMaps, overlayMaps).addTo(mymap);
@@ -91,8 +105,6 @@
 	mymap.on('click', onMapClick);
 
 </script>
-
-
 
 </body>
 </html>
