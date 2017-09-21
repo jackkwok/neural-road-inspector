@@ -83,6 +83,5 @@ class CustomImgGenerator(object):
 			if not is_Validation:
 			 	x_train_from_src, y_train_from_src = apply_augment_sequence(x_train_from_src, y_train_from_src)
 			self._normalization(x_train_from_src)
-			#x_train_from_src = x_train_from_src.transpose(0,3,1,2) # theano expects channels come before dims
 			yield x_train_from_src, y_train_from_src
 			i += batch_size

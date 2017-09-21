@@ -1,2 +1,2 @@
-python RoadSegmentor.py cfg/unet_dilated_set2.cfg > stout/unet_dilated_set2.txt;
+python RoadSegmentor.py cfg/ps_unet_dilated.cfg > stout/ps_unet_dilated_wblur.txt;
 shutdown -h 1;
