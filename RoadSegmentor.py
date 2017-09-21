@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[4]:
 
 import numpy as np
 import pandas as pd
@@ -27,9 +27,9 @@ from unet.maskprocessor import *
 from unet.visualization import *
 
 
-# This notebook runs the model training.  It takes the config file via command line parameter.  If run this notebook directly, please manually set config_file to point to your configuration file.  See cfg/*.cfg for examples.
+# This notebook runs the model training.  It takes the config file via command line parameter.  If run this notebook directly, please manually set config_file to point to your configuration file.  See cfg/default.cfg for examples.
 
-# In[4]:
+# In[5]:
 
 # command line args processing "python RoadSegmentor.py cfg/3.cfg"
 if len(sys.argv) > 1 and '.cfg' in sys.argv[1]:
@@ -77,6 +77,16 @@ max_number_epoch = settings.getint('model', 'max_epoch')
 print('learning rate: {}'.format(learning_rate))
 print('max epoch: {}'.format(max_number_epoch))
 
+min_learning_rate = 0.000001
+if settings.has_option('model', 'min_learning_rate'):
+    min_learning_rate = settings.getfloat('model', 'min_learning_rate')
+print('minimum learning rate: {}'.format(min_learning_rate))
+
+lr_reduction_factor = 0.1
+if settings.has_option('model', 'lr_reduction_factor'):
+    lr_reduction_factor = settings.getfloat('model', 'lr_reduction_factor')
+print('lr_reduction_factor: {}'.format(lr_reduction_factor))
+
 batch_size = settings.getint('model', 'batch_size') 
 print('batch size: {}'.format(batch_size))
 
@@ -111,10 +121,10 @@ model_checkpoint = ModelCheckpoint(model_filename,
                                    save_best_only=True)
 
 reduceLR = ReduceLROnPlateau(monitor='val_loss',
-                             factor=0.1,
+                             factor=lr_reduction_factor,
                              patience=2,
                              verbose=1,
-                             min_lr=0.000001,
+                             min_lr=min_learning_rate,
                              epsilon=1e-4)
 
 
