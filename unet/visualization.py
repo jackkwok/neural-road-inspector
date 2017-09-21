@@ -4,7 +4,14 @@ import seaborn as sns
 import numpy as np
 
 def trainingHistoryPlot(file_path, history):
-	""" Plot training stats over time """
+	"""
+		Plot training stats (training/validation accuricy and loss) over time 
+
+		Parameters:
+			file_path: file path to save the generated graph
+			history: the history dictionary from the Keras fit()
+	"""
+	plt.rcParams.update({'font.size': 32})
 	fig = plt.figure(figsize=(20, 10))
 
 	# history for accuracy
