@@ -15,13 +15,18 @@ def apply_augment_sequence(image_set_x, image_set_y):
 		Returns:
 			image_setx_aug, image_sety_aug : augmented versions of the inputs
 	"""
+
+	# Sometimes(0.5, ...) applies the given augmenter in 50% of all cases,
+	# e.g. Sometimes(0.5, GaussianBlur(0.3)) would blur roughly every second image.
+	sometimes = lambda aug: iaa.Sometimes(0.5, aug)
+
 	seq = iaa.Sequential(
 		[
 			iaa.Fliplr(0.5),
 			iaa.Flipud(0.5),
-			iaa.Affine(
+			sometimes(iaa.Affine(
 				rotate=(90, 90),
-			)
+			))
 		],
 		random_order=False)
 	seq_det = seq.to_deterministic()
