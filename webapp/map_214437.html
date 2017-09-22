@@ -26,7 +26,7 @@
 
 	var local_tiles_root = 'file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/'
 	var web_tiles_root = 'tiles/'
-	var tiles_root = web_tiles_root
+	var tiles_root = local_tiles_root
 
 	var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
 		maxZoom: 18,
@@ -53,33 +53,30 @@
 		maxNativeZoom: 16,
 		id: 'jackkwok.digitalglobe_harvey_3020132_tif',
 		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg',
-		attribution: 'DigitalGlobe  <a href="https://www.digitalglobe.com/opendata/hurricane-irma/license">License</a>',
+		attribution: 'Imagery © DigitalGlobe  <a href="https://www.digitalglobe.com/opendata/hurricane-irma/license">License</a>',
 	});
 
 	var jk_attribution = '© Jack Kwok <a href="https://creativecommons.org/licenses/by/2.0/">License</a>'
 
 	// TODO set bounds: to avoid hitting AWS S3 necessarily.
 	// https://gis.stackexchange.com/questions/69738/leafletjs-load-tile-layer-based-on-bounding-box
-	var inspector = L.tileLayer(tiles_root + 'anomaly_mask_v141812/{z}/{x}/{y}.png', {
+	var inspector = L.tileLayer(tiles_root + 
+		'214437_anomaly_mask/{z}/{x}/{y}.png', {
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		attribution: jk_attribution,
 	});
 	inspector.addTo(mymap);
 
-	var pre_road_seg_mask = L.tileLayer(tiles_root + 'mapbox_sat_mask/{z}/{x}/{y}.jpg', {
+	var pre_road_seg_mask = L.tileLayer(tiles_root + 
+		'214437_pre_mask/{z}/{x}/{y}.jpg', {
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		attribution: jk_attribution,
 	});
 
-	var post_road_seg_mask_223544 = L.tileLayer(tiles_root + 'jackkwok.digitalglobe_harvey_3020132_tif_mask/{z}/{x}/{y}.jpg', {
-		minNativeZoom: 16,
-		maxNativeZoom: 16,
-		attribution: jk_attribution,
-	});
-
-	var post_road_seg_mask_141812 = L.tileLayer(tiles_root + '141812_post_mask/{z}/{x}/{y}.jpg', {
+	var post_road_seg_mask = L.tileLayer(tiles_root + 
+		'214437_post_mask/{z}/{x}/{y}.jpg', {
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		attribution: jk_attribution,
@@ -94,7 +91,7 @@
 	var overlayMaps = {
 	    "Road Inspector": inspector,
 	    "Pre Harvey Roads": pre_road_seg_mask,
-	    "Post Harvey Roads": post_road_seg_mask_141812,
+	    "Post Harvey Roads": post_road_seg_mask,
 	};
 
 	L.control.layers(baseMaps, overlayMaps).addTo(mymap);
