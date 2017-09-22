@@ -6,7 +6,7 @@ import random
 
 def apply_augment_sequence(image_set_x, image_set_y):
 	"""
-		Randomly flip the images in both set with deterministic order.
+		Randomly flip and rotate the images in both set with deterministic order.  This turns 1 image into 8 images.
 
 		Parameters:
 			image_set_x: List of Images (X) to augment
@@ -19,6 +19,9 @@ def apply_augment_sequence(image_set_x, image_set_y):
 		[
 			iaa.Fliplr(0.5),
 			iaa.Flipud(0.5),
+			iaa.Affine(
+				rotate=(90, 90),
+			)
 		],
 		random_order=False)
 	seq_det = seq.to_deterministic()
