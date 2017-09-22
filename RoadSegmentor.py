@@ -178,12 +178,10 @@ print('model training complete. time spent: {}'.format(time_spent_trianing))
 
 # In[ ]:
 
-stout_dir = 'stout/'
-
-historyFilePath = stout_dir + '{}-{}-train-history.png'.format(model_id, timestr)
+historyFilePath = model_dir + '{}-{}-train-history.png'.format(model_id, timestr)
 trainingHistoryPlot(historyFilePath, history.history)
 
-pickleFilePath = stout_dir + '{}-{}-history-dict.pickle'.format(model_id, timestr)
+pickleFilePath = model_dir + '{}-{}-history-dict.pickle'.format(model_id, timestr)
 with open(pickleFilePath, 'wb') as handle:
     pickle.dump(history.history, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
