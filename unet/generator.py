@@ -27,6 +27,7 @@ class CustomImgGenerator(object):
 
 	def _subtract_mean(self, im):
 		""" assumes image ordering where channel is after dims """
+		im = im.astype(float)
 		im[:,:,:,0] -= 103.939
 		im[:,:,:,1] -= 116.779
 		im[:,:,:,2] -= 123.68
