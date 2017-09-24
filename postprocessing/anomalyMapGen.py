@@ -38,7 +38,7 @@ def _get_diff(pre_mask_path, post_mask_path):
 def _add_alpha_channel_mask(img, alpha=0.80):
 	"""
 	Parameters:
-		img: the source image which has black or white colored pixels only.
+		img: the source image with bgr channels which has black or white colored pixels only.
 		alpha: the alpha transparency [0.0, 1.0]
 
 	Returns:
@@ -51,8 +51,10 @@ def _add_alpha_channel_mask(img, alpha=0.80):
 
 def _colorize_mask(bgra_img):
 	"""
+	Parameter:
 		bgra_img: 4 channel images which has black or white colored pixels only.
-		colorize (red) all pixels which are not black color: (0,0,0)
+	Returns:
+		colorized image where all pixels which are not black color: (0,0,0) are turned to red color
 	"""
 	b_channel, g_channel, r_channel, alpha_channel = cv2.split(bgra_img)
 	
@@ -61,19 +63,29 @@ def _colorize_mask(bgra_img):
 	r_channel[r_channel > 126] = 255
 	return cv2.merge((b_channel, g_channel, r_channel, alpha_channel))
 
+def _filter_by_street_map(img, street_map_path):
+	orig_street_img = cv2.imread(street_map_path)
+
+	gray_street_img = cv2.cvtColor(orig_street_img, cv2.COLOR_BGR2GRAY)
+	ret, binary_street_mask = cv2.threshold(gray_street_img, 250, 255, cv2.THRESH_BINARY)
+
+	img = img.astype(int)
+	return cv2.bitwise_and(img, img, mask=binary_street_mask)
+
 # TODO: Thresholding?
 # Strutural Similarly Measure: http://www.pyimagesearch.com/2014/09/15/python-compare-two-images/
-def generate_anomaly_img(pre_path, post_path):
+def generate_anomaly_img(pre_path, post_path, street_map_path):
 	"""
 	Parameters:
 		pre_path: file path to the pre event segmentation image
 		post_path: file path to the post event segmentation image
+		street_map_path: file path to the street map image
 
 	Returns:
-		Image with anomaly annotation to be used in a map overlay.
+		anomaly annotation image tile to be used in a map overlay.
 	"""
 	diff_img = _get_diff(pre_path, post_path)
-	return _colorize_mask(_add_alpha_channel_mask(diff_img))
+	return _colorize_mask(_add_alpha_channel_mask(_filter_by_street_map(diff_img, street_map_path)))
 
 def makedirs(path):
 	if not os.path.exists(path):
@@ -88,12 +100,22 @@ def _image_file_list(dir_path):
 				result.append(os.path.join(root, file))
 	return result
 
-def generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, output_dir):
+def generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, street_map_dir, output_dir, street_map_file_ext = '.png'):
+	"""
+		Parameters:
+			pre_mask_dir: directory containing the pre event segmentation mask tiles.
+			post_mask_dir: directory containing the post event segmentation mask tiles.
+			street_map_dir: directory containing steet map tiles.
+			output_dir: directory where new anomaly tiles are saved.
+			street_map_file_ext: file extension of the street map tiles. default is .png.
+	"""
 	pre_file_list = _image_file_list(pre_mask_dir)
 	for pre_file in tqdm(pre_file_list):
 		post_file = pre_file.replace(pre_mask_dir, post_mask_dir, 1)
 		if os.path.exists(post_file):
-			anomaly_img = generate_anomaly_img(pre_file, post_file)
+			street_file = pre_file.replace(pre_mask_dir, street_map_dir, 1)
+			street_file = os.path.splitext(street_file)[0] + street_map_file_ext
+			anomaly_img = generate_anomaly_img(pre_file, post_file, street_file)
 			output_file = pre_file.replace(pre_mask_dir, output_dir, 1)
 			# must save in a format that supports alpha transparency (e.g. PNG or WEBP)
 			output_file = os.path.splitext(output_file)[0]+'.png'
@@ -105,10 +127,11 @@ def generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, output_dir):
 	print('map tiles generation complete')
 
 # execution starts here. command line args processing.
-if len(sys.argv) > 3:
+if len(sys.argv) > 4:
 	pre_mask_dir = sys.argv[1]
 	post_mask_dir = sys.argv[2]
-	output_dir = sys.argv[3]
+	street_map_dir = sys.argv[3]
+	output_dir = sys.argv[4]
 
 	if not os.path.isdir(pre_mask_dir):
 		print ('error: invalid directory {}'.format(pre_mask_dir))
@@ -116,14 +139,18 @@ if len(sys.argv) > 3:
 	if not os.path.isdir(post_mask_dir):
 		print ('error: invalid directory {}'.format(post_mask_dir))
 		sys.exit(0)
+	if not os.path.isdir(street_map_dir):
+		print ('error: invalid directory {}'.format(street_map_dir))
+		sys.exit(0)
 
 	# add OS-indepedent slashes
 	pre_mask_dir = os.path.join(pre_mask_dir, '') 
 	post_mask_dir = os.path.join(post_mask_dir, '')
+	street_map_dir = os.path.join(street_map_dir, '')
 	output_dir = os.path.join(output_dir, '')
 	makedirs(output_dir)
-	generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, output_dir)
+	generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, street_map_dir, output_dir)
 else:
-	print ('error: required command line argument missing. Syntax: python anomalyMapGen.py <pre_event_segment_dir> <post_event_segment_dir> <output_dir>')
+	print ('error: required command line argument missing. Syntax: python anomalyMapGen.py <pre_event_segment_dir> <post_event_segment_dir> <street_map_dir> <output_dir>')
 	sys.exit(0)
 
