@@ -18,11 +18,18 @@
 
 <div id="mapid" style="width: 1200px; height: 800px;"></div>
 <script>
+	// San Jacinto River flooding
 	//-95.1,29.8,-95.0,29.9
-	var mymap = L.map('mapid').setView([29.82843, -95.0744], 16);
+
+	var bounds = new L.LatLngBounds(new L.LatLng(29.88255, -95.09723), new L.LatLng(29.79511, -95.0114));
+
+	var mymap = L.map('mapid', {
+		maxBounds: bounds,
+  		maxBoundsViscosity: 1.0
+	}).setView([29.82843, -95.0744], 16);
 
 	mymap.options.maxZoom = 18;
-	mymap.options.minZoom = 12;
+	mymap.options.minZoom = 13;
 
 	var local_tiles_root = 'file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/'
 	var web_tiles_root = 'tiles/'

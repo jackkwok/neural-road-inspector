@@ -18,15 +18,24 @@
 
 <div id="mapid" style="width: 1200px; height: 800px;"></div>
 <script>
+	// San Jacinto River flooding
 	//-95.1,29.8,-95.0,29.9
-	var mymap = L.map('mapid').setView([29.82843, -95.0744], 16);
+
+	var bounds = new L.LatLngBounds(new L.LatLng(29.88255, -95.09723), new L.LatLng(29.79511, -95.0114));
+
+	var mymap = L.map('mapid', {
+		maxBounds: bounds,
+  		maxBoundsViscosity: 1.0
+	}).setView([29.82843, -95.0744], 16);
 
 	mymap.options.maxZoom = 18;
-	mymap.options.minZoom = 12;
+	mymap.options.minZoom = 13;
 
 	var local_tiles_root = 'file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/'
 	var web_tiles_root = 'tiles/'
-	var tiles_root = local_tiles_root
+	var tiles_root = web_tiles_root
+
+	var token = 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg'
 
 	var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
 		maxZoom: 18,
@@ -34,7 +43,7 @@
 			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 		id: 'mapbox.satellite',
-		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg'
+		accessToken: token
 	});
 	satellite.addTo(mymap);
 
@@ -44,7 +53,7 @@
 			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
 		id: 'mapbox.streets',
-		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg'
+		accessToken: token
 	});
 
 	// Post Hurrican Satellite Imagery
@@ -52,7 +61,7 @@
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		id: 'jackkwok.digitalglobe_harvey_3020132_tif',
-		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg',
+		accessToken: token,
 		attribution: 'Imagery © DigitalGlobe  <a href="https://www.digitalglobe.com/opendata/hurricane-irma/license">License</a>',
 	});
 
@@ -83,7 +92,7 @@
 	});
 
 	var baseMaps = {
-    	"Satelllite Base Map": satellite,
+    	"Pre Harvey Satelllite": satellite,
     	"Street Base Map": street,
     	"Post Harvey Satellite": post_hurricane,
 	};
