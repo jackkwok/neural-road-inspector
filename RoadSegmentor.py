@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[4]:
+# In[1]:
 
 import numpy as np
 import pandas as pd
@@ -20,18 +20,18 @@ import pickle
 import matplotlib.pyplot as plt
 #%matplotlib inline
 
-from unet.unet import *
 from unet.generator import *
 from unet.loss import *
 from unet.maskprocessor import *
 from unet.visualization import *
+from unet.modelfactory import *
 
 
-# This notebook runs the model training.  It takes the config file via command line parameter.  If run this notebook directly, please manually set config_file to point to your configuration file.  See cfg/default.cfg for examples.
+# This notebook trains the Road Segmentation model.  The exported .py script takes in the config filename via a command line parameter.  To run this notebook directly in jupyter notebook, please manually set config_file to point to a configuration file (e.g. cfg/default.cfg).
 
-# In[5]:
+# In[2]:
 
-# command line args processing "python RoadSegmentor.py cfg/3.cfg"
+# command line args processing "python RoadSegmentor.py cfg/your_config.cfg"
 if len(sys.argv) > 1 and '.cfg' in sys.argv[1]:
     config_file = sys.argv[1]
 else:
@@ -91,7 +91,7 @@ batch_size = settings.getint('model', 'batch_size')
 print('batch size: {}'.format(batch_size))
 
 
-# In[5]:
+# In[3]:
 
 img_gen = CustomImgGenerator(x_data_dir, y_data_dir, data_csv_path)
 
@@ -100,7 +100,7 @@ train_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=False)
 validation_gen = img_gen.trainGen(batch_size=batch_size, is_Validation=True)
 
 
-# In[6]:
+# In[4]:
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 model_filename = model_dir + '{}-{}.hdf5'.format(model_id, timestr)
@@ -128,7 +128,7 @@ reduceLR = ReduceLROnPlateau(monitor='val_loss',
                              epsilon=1e-4)
 
 
-# In[7]:
+# In[10]:
 
 training_start_time = datetime.now()
 
@@ -136,9 +136,9 @@ number_validations = img_gen.validation_samples_count()
 
 samples_per_epoch = img_gen.training_samples_count()
 
-unet = Unet(num_channels = 3, 
-            img_rows = 512,
-            img_cols = 512)
+modelFactory = ModelFactory(num_channels = 3, 
+                            img_rows = 512,
+                            img_cols = 512)
 
 if model_file is not None:
     model = load_model(model_dir + model_file,
@@ -146,7 +146,7 @@ if model_file is not None:
                                   'dice_coef': dice_coef, 
                                   'binary_crossentropy_dice_loss': binary_crossentropy_dice_loss})
 else:
-    model = unet.get_model(model_id)
+    model = modelFactory.get_model(model_id)
 
 print(model.summary())
 
@@ -178,8 +178,10 @@ print('model training complete. time spent: {}'.format(time_spent_trianing))
 
 # In[ ]:
 
+print(history.history)
+
 historyFilePath = model_dir + '{}-{}-train-history.png'.format(model_id, timestr)
-trainingHistoryPlot(historyFilePath, history.history)
+trainingHistoryPlot(model_id + timestr, historyFilePath, history.history)
 
 pickleFilePath = model_dir + '{}-{}-history-dict.pickle'.format(model_id, timestr)
 with open(pickleFilePath, 'wb') as handle:

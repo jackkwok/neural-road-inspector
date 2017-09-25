@@ -1,2 +1,2 @@
-python RoadSegmentor.py cfg/unet_dilated_blur_set2_cont.cfg > stout/unet_dilated_blur_set2_cont.txt;
+python RoadSegmentor.py cfg/dilated_unet_set1.cfg > stout/dilated_unet_set1.txt;
 shutdown -h 1;

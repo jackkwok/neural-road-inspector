@@ -3,22 +3,24 @@ import matplotlib.cm as cm
 import seaborn as sns
 import numpy as np
 
-def trainingHistoryPlot(file_path, history):
+def trainingHistoryPlot(model_id, file_path, history):
 	"""
 		Plot training stats (training/validation accuricy and loss) over time 
 
 		Parameters:
+			model_id: used for showing as title of the graph
 			file_path: file path to save the generated graph
 			history: the history dictionary from the Keras fit()
 	"""
 	plt.rcParams.update({'font.size': 32})
 	fig = plt.figure(figsize=(20, 10))
 
+	plt.title(model_id)
+
 	# history for accuracy
 	subplot1 = fig.add_subplot(121)
 	subplot1.plot(history['acc'])
 	subplot1.plot(history['val_acc'])
-	subplot1.set_title('accuracy')
 	subplot1.set_ylabel('accuracy')
 	subplot1.set_xlabel('epoch')
 	subplot1.legend(['train', 'val'], loc='upper left')
@@ -28,7 +30,6 @@ def trainingHistoryPlot(file_path, history):
 	subplot2 = fig.add_subplot(122)
 	subplot2.plot(history['loss'])
 	subplot2.plot(history['val_loss'])
-	subplot2.set_title('model loss')
 	subplot2.set_ylabel('loss')
 	subplot2.set_xlabel('epoch')
 	subplot2.legend(['train', 'val'], loc='upper left')
