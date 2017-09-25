@@ -82,7 +82,7 @@ class Unet(object):
 
 		return x
 
-	def dilated_unet(self, classes=2, features=32, depth=4,
+	def dilated_unet(self, classes=1, features=32, depth=4,
 					 temperature=1.0, padding='same', batchnorm=False,
 					 dropout=0.0, dilation_layers=5):
 		"""Generate `dilated U-Net' model where the convolutions in the encoding and
