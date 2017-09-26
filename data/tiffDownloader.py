@@ -29,5 +29,5 @@ if len(sys.argv) > 1:
 		tiffList = filterListByExtension(content, '.tif')
 		downloadFiles(tiffList)
 else:
-	print ('error: required command line argument missing. Syntax: python httpDownloader.py <http_file_url>')
+	print ('error: required command line argument missing. Syntax: python httpDownloader.py <urls_file>')
 	sys.exit(0)
