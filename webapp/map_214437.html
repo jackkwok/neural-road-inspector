@@ -58,8 +58,7 @@
 
 	// Post Hurrican Satellite Imagery
 	var post_hurricane = L.tileLayer('https://api.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.jpg?access_token={accessToken}', {
-		minNativeZoom: 16,
-		maxNativeZoom: 16,
+		maxZoom: 18,
 		id: 'jackkwok.digitalglobe_harvey_3020132_tif',
 		accessToken: token,
 		attribution: 'Imagery © DigitalGlobe  <a href="https://www.digitalglobe.com/opendata/hurricane-irma/license">License</a>',
@@ -84,12 +83,16 @@
 		attribution: jk_attribution,
 	});
 
+	pre_road_seg_mask.setOpacity(0.5)
+
 	var post_road_seg_mask = L.tileLayer(tiles_root + 
 		'214437_post_mask/{z}/{x}/{y}.jpg', {
 		minNativeZoom: 16,
 		maxNativeZoom: 16,
 		attribution: jk_attribution,
 	});
+
+	post_road_seg_mask.setOpacity(0.5)
 
 	var baseMaps = {
     	"Pre Harvey Satelllite": satellite,
