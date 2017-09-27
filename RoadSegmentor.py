@@ -90,6 +90,9 @@ print('lr_reduction_factor: {}'.format(lr_reduction_factor))
 batch_size = settings.getint('model', 'batch_size') 
 print('batch size: {}'.format(batch_size))
 
+input_width = settings.getint('model', 'input_width')
+input_height = settings.getint('model', 'input_height')
+
 
 # In[3]:
 
@@ -128,7 +131,7 @@ reduceLR = ReduceLROnPlateau(monitor='val_loss',
                              epsilon=1e-4)
 
 
-# In[10]:
+# In[5]:
 
 training_start_time = datetime.now()
 
@@ -137,8 +140,8 @@ number_validations = img_gen.validation_samples_count()
 samples_per_epoch = img_gen.training_samples_count()
 
 modelFactory = ModelFactory(num_channels = 3, 
-                            img_rows = 512,
-                            img_cols = 512)
+                            img_rows = input_height,
+                            img_cols = input_width)
 
 if model_file is not None:
     model = load_model(model_dir + model_file,
@@ -162,7 +165,7 @@ model.compile(optimizer = optimizer,
               metrics = ['accuracy', dice_coef])
 
 
-# In[ ]:
+# In[6]:
 
 history = model.fit_generator(generator=train_gen,
                               steps_per_epoch=np.ceil(float(samples_per_epoch) / float(batch_size)),
