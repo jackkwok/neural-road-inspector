@@ -85,7 +85,8 @@ class Unet(object):
 	def dilated_unet(self, classes=1, features=32, depth=4,
 					 temperature=1.0, padding='same', batchnorm=False,
 					 dropout=0.0, dilation_layers=5):
-		"""Generate `dilated U-Net' model where the convolutions in the encoding and
+		"""
+		Generate `dilated U-Net' model where the convolutions in the encoding and
 		bottleneck are replaced by dilated convolutions. The second convolution in
 		pair at a given scale in the encoder is dilated by 2. The number of
 		dilation layers in the innermost bottleneck is controlled by the
@@ -124,7 +125,7 @@ class Unet(object):
 		dilation_rate = 1
 		for n in range(dilation_layers):
 			x = Conv2D(filters=features, kernel_size=(3,3), padding=padding,
-					   dilation_rate=dilation_rate)(x)
+					   kernel_initializer='identity', dilation_rate=dilation_rate)(x)
 			x = BatchNormalization()(x) if batchnorm else x
 			x = Activation('relu')(x)
 			x = Dropout(dropout)(x) if dropout > 0 else x

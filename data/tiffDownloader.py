@@ -15,8 +15,8 @@ def filterListByExtension(fileUrlList, extension):
 	for fileUrl in fileUrlList:
 		#fileExt = fileUrl[fileUrl.rfind(".")+1:]
 		if fileUrl.endswith(extension):
-			print('adding file {} to queue'.format(fileUrl))
 			result.append(fileUrl)
+			print('added to queue: {}'.format(fileUrl))
 	return result
 
 # execution starts here. command line args processing.
