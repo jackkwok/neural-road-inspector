@@ -125,7 +125,7 @@ class Unet(object):
 		dilation_rate = 1
 		for n in range(dilation_layers):
 			x = Conv2D(filters=features, kernel_size=(3,3), padding=padding,
-					   kernel_initializer='identity', dilation_rate=dilation_rate)(x)
+					   kernel_initializer='ones', dilation_rate=dilation_rate)(x)
 			x = BatchNormalization()(x) if batchnorm else x
 			x = Activation('relu')(x)
 			x = Dropout(dropout)(x) if dropout > 0 else x
