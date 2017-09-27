@@ -1,0 +1,52 @@
+# Motivation
+Devastating hurricanes are occurring with higher frequency due to global climate change.  After a hurricane, roads are often flooded or washed out, making them treacherous for motorists.
+
+Using state of the art computer vision deep learning methods, I attempted to automatically annotate flooded, washed out, or otherwise severely damaged roads.  My goal is create a tool that can help detect and visualize non-passable roads in a simple user interface.
+
+# Getting Started
+## Prerequisites
+
+requirements.txt
+
+## Training Data
+
+My model is trained purely with Satellite images and Street map images downloaded via [MapBox API](https://www.mapbox.com/api-documentation/) but this code should work with training images from other sources.
+Because I do not own the training images, no training data is provided here.
+
+I chosen to train images from zoom level 16 from Tile Map Service (TMS).  If you are not familiar with TMS, please refer to
+[OSM Wiki](https://wiki.osgeo.org/wiki/Tile_Map_Service_Specification)
+
+## Training the Road Segmentation Neural Network Model
+
+For in depth technical discussion of the model, please see:
+
+> python RoadSegmentor.py [config file]
+
+We have made it easy to train with your own datasets and hyper-parameters via a config file.  The config file contains paths to the training images and model training parameters.  See cfg/default.cfg for an example.
+
+Using a Nvidia Quatro 5000 GPU (16MB GPU RAM), training with a batch size of 16 took about 5 hours on a dataset with about 9000 images.
+
+## Generating Road Segmentation Tiles
+
+Command line tool:
+
+> python roadSegmentationMaskGen.py [satellite_images_dir] [output_dir] [keras_model_filepath]
+
+## Generating Annotated Map Tiles
+
+This project comes with a command line tool that generate a directory of annotated map tiles following the same TMS directory structure of the input directories.
+
+> python postprocessing/anomalyMapGen.py [pre_event_segment_dir] [post_event_segment_dir] [street_map_dir] [output_dir]
+
+### Demo
+Embed here if possible!
+
+### License
+Code: MIT License
+
+Road Segmentation Model: CC-BY-SA
+
+Map tiles: CC-BY-SA
+
+### Disclaimer
+This project is for research purposes only.  Further testing and improvement is needed for real world use.
