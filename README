@@ -11,7 +11,7 @@ In your shell, run:
 
 ## Training Data
 
-My model is trained purely with satellite imagery and street map images downloaded via [MapBox API](https://www.mapbox.com/api-documentation/) but this code will accept training images from other sources.
+My model is trained purely with satellite imagery and street map images from [MapBox API](https://www.mapbox.com/api-documentation/) but this code will accept training images from other sources.
 Because I do not own the training images, no training data is copied here.  You will have to sign up for a MapBox account to get an access token.
 
 I chose to train images from zoom level 16 (Open Street Map Slippy Map Format).
@@ -22,7 +22,7 @@ For an in-depth technical discussion of the model, please see:
 
 > python RoadSegmentor.py [config file]
 
-We have made it easy to train with your own datasets and hyper-parameters via a config file.  The config file contains paths to the training images and model training parameters.  See cfg/default.cfg for an example.
+Before you can train the model, create a config file to point to your datasets and specify training hyper-parameters.  The config file contains paths to the training images and model training parameters.  See cfg/default.cfg for an example.
 
 In your configuration file, specify the relative or absolute paths to your training data.  You must also supply a plaintext file listing satellite image files with column label 'img'.  See data/tile_log.csv for an example.
 
@@ -32,9 +32,9 @@ With a Nvidia Quadro P5000 GPU (16MB GPU RAM), training with a batch size of 16 
 
 For road change detection, you will need to generate 2 sets of road segmentations: pre-hurricane and post-hurricane.
 
-Post Hurricane satellite images (in GeoTiff format) can be downloaded via the DigitalGlobe Open Data Program.  For convenience, you can use data/tiffDownloader.py to download a set of geotiff files.  The script takes in a text file containing a list of http urls on separate lines.
+Post Hurricane satellite imagery (in GeoTiff format) can be downloaded via the DigitalGlobe Open Data Program.  For convenience, you can use data/tiffDownloader.py to download a set of geotiff files.  The script takes in a text file containing a list of http urls on separate lines.
 
-In a data processing step, [GDAL2Tiles](https://github.com/OSGeo/gdal) is used cut the GeoTiff files into TMS standard tiles at the same zoom level as the training set.
+In a data pre-processing step, [GDAL2Tiles](https://github.com/OSGeo/gdal) is used cut the GeoTiff files into TMS standard tiles at the same zoom level as the training set.
 
 Command line tool:
 
@@ -55,7 +55,7 @@ Embed here if possible!
 ### License
 Code: MIT License
 
-Road Segmentation Network Weight File: CC-BY-SA
+Road Segmentation Weight File: CC-BY-SA
 
 Map Artifacts: CC-BY-SA
 

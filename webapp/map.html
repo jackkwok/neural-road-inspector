@@ -11,10 +11,38 @@
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+    
+	<link rel="stylesheet" href="https://cdn.rawgit.com/balzss/luxbar/ae5835e2/build/luxbar.min.css">
+
     <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
 	
 </head>
+
 <body>
+
+<header id="luxbar" class="luxbar-fixed">
+    <input type="checkbox" class="luxbar-checkbox" id="luxbar-checkbox"/>
+    <div class="luxbar-menu luxbar-menu-right luxbar-menu-material-green">
+        <ul class="luxbar-navigation">
+            <li class="luxbar-header">
+                <a href="#" class="luxbar-brand">PlanetAI.org</a>
+                <label class="luxbar-hamburger luxbar-hamburger-doublespin" 
+                id="luxbar-hamburger" for="luxbar-checkbox"> <span></span> </label>
+            </li>
+            <li class="luxbar-item"><a href="#">About</a></li>
+            <li class="luxbar-item"><a href="#">Contact</a></li>
+        </ul>
+    </div>
+</header>
+
+<br>
+<br>
+<br>
+
+<b>San Jacinto River, TX</b>
+
+<br>
+<br>
 
 <div id="mapid" style="width: 1200px; height: 800px;"></div>
 <script>
@@ -29,13 +57,13 @@
 	}).setView([29.82843, -95.0744], 16);
 
 	mymap.options.maxZoom = 18;
-	mymap.options.minZoom = 13;
+	mymap.options.minZoom = 14;
 
 	var local_tiles_root = 'file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/'
 	var web_tiles_root = 'tiles/'
-	var tiles_root = web_tiles_root
+	var tiles_root = local_tiles_root
 
-	var satellite = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
+	var pre_hurricane = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
 		maxZoom: 18,
 		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
 			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
@@ -43,7 +71,6 @@
 		id: 'mapbox.satellite',
 		accessToken: 'pk.eyJ1IjoiamFja2t3b2siLCJhIjoiY2o3YXBmc2YyMGlvMjJ3cnNhc3ozZmw5MCJ9.noMLXNAU-AB9ESNUDuuAyg'
 	});
-	satellite.addTo(mymap);
 
 	var street = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
 		maxZoom: 18,
@@ -71,7 +98,6 @@
 		maxNativeZoom: 16,
 		attribution: jk_attribution,
 	});
-	inspector.addTo(mymap);
 
 	var pre_road_seg_mask = L.tileLayer(tiles_root + 'mapbox_sat_mask/{z}/{x}/{y}.jpg', {
 		minNativeZoom: 16,
@@ -95,17 +121,23 @@
 
 	post_road_seg_mask_141812.setOpacity(0.5)
 
+	var post_inspector = L.layerGroup([post_hurricane, inspector]);
+	var pre_road_seg = L.layerGroup([pre_hurricane, pre_road_seg_mask]);
+	var post_road_seg = L.layerGroup([post_hurricane, post_road_seg_mask_141812]);
+
 	var baseMaps = {
-    	"Pre Harvey Satelllite": satellite,
-    	"Street Base Map": street,
-    	"Post Harvey Satellite": post_hurricane,
+		"Street Base Map": street,
+    	"Pre Harvey Satelllite": pre_hurricane,
+    	"Post Harvey Satellite": post_inspector,
+    	"Pre Harvey Road Seg": pre_road_seg,
+    	"Post Harvey Road Seg": post_road_seg
 	};
 
 	var overlayMaps = {
-	    "Road Inspector": inspector,
-	    "Pre Harvey Roads": pre_road_seg_mask,
-	    "Post Harvey Roads": post_road_seg_mask_141812,
+	    "Inspector": inspector
 	};
+
+	pre_hurricane.addTo(mymap);
 
 	L.control.layers(baseMaps, overlayMaps).addTo(mymap);
 

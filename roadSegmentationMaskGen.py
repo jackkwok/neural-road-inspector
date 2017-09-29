@@ -49,13 +49,13 @@ def genRoadMask(img_path, out_dir, model_path, is_directory = False):
 		x = []
 		for file in filelist:
 			print(file)
-			img = normalize_img(file, resize=True)
+			img = normalize_img(file)
 			print(img.shape)
 			x.append(img)
 		x = np.array(x, np.float32)
 		batch_size = 4
 	else:
-		img = normalize_img(img_path, resize=True)
+		img = normalize_img(img_path)
 		x = np.expand_dims(img, axis=0)
 		batch_size = 1
 	

@@ -29,7 +29,7 @@
 	}).setView([29.82843, -95.0744], 16);
 
 	mymap.options.maxZoom = 18;
-	mymap.options.minZoom = 13;
+	mymap.options.minZoom = 14;
 
 	var local_tiles_root = 'file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/'
 	var web_tiles_root = 'tiles/'
@@ -74,7 +74,6 @@
 		maxNativeZoom: 16,
 		attribution: jk_attribution,
 	});
-	inspector.addTo(mymap);
 
 	var pre_road_seg_mask = L.tileLayer(tiles_root + 
 		'214437_pre_mask/{z}/{x}/{y}.jpg', {
@@ -94,14 +93,15 @@
 
 	post_road_seg_mask.setOpacity(0.5)
 
+	var post_and_inspector = L.layerGroup([post_hurricane, inspector]);
+
 	var baseMaps = {
     	"Pre Harvey Satelllite": satellite,
     	"Street Base Map": street,
-    	"Post Harvey Satellite": post_hurricane,
+    	"Post Harvey Satellite": post_and_inspector,
 	};
 
 	var overlayMaps = {
-	    "Road Inspector": inspector,
 	    "Pre Harvey Roads": pre_road_seg_mask,
 	    "Post Harvey Roads": post_road_seg_mask,
 	};
