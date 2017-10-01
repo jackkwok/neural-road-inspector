@@ -5,6 +5,7 @@ import numpy as np
 from tqdm import tqdm
 
 def _realign_post_mask(img):
+	# WARNING: warp_matrix is calibrated for digitalglobe post-harvey images.
 	# (digitalglobe post-harvey) needs to be shifted about 6 pixels to the left and 6 pixels to the bottom to match img1.
 	warp_matrix = np.float32([[1,0,6],[0,1,-6]])
 	rows,cols,channels = img.shape
@@ -20,15 +21,9 @@ def _get_diff(pre_mask_path, post_mask_path):
 	post_mask[post_mask > 126] = 255
 	post_mask[post_mask <= 126] = 0
 
-	# Apply mathematically morphology to reduce false positive
-	# dilate the post_path or erode the pre_path
-	kernel = np.ones((3,3), np.uint8)
-	pre_mask = cv2.erode(pre_mask, kernel, iterations=1)
-	post_mask = cv2.dilate(post_mask, kernel, iterations=1)
-
 	# Due to misalignment between pre and post images, we run ECC alignment to align the images.
 	# Ran ECC algo on source satellite images and we will hardcode the realignment for now.
-	# TODO: remove hardcoding.
+	# TODO: remove hardcoding and use ecc_align in alignment module.
 	post_mask = _realign_post_mask(post_mask)
 
 	anomaly_mask = pre_mask - post_mask
@@ -150,7 +145,9 @@ if len(sys.argv) > 4:
 	output_dir = os.path.join(output_dir, '')
 	makedirs(output_dir)
 	generateAnomalyMapTiles(pre_mask_dir, post_mask_dir, street_map_dir, output_dir)
+elif len(sys.argv) == 2 and sys.argv[1] == '-h':
+	print('******************** \n\n Usage: python anomalyMapGen.py <pre_event_segment_dir> <post_event_segment_dir> <street_map_dir> <output_dir>\n\n ) \n\n********************')
 else:
-	print ('error: required command line argument missing. Syntax: python anomalyMapGen.py <pre_event_segment_dir> <post_event_segment_dir> <street_map_dir> <output_dir>')
+	print ('error: required command line argument missing. \n\n Syntax: python anomalyMapGen.py <pre_event_segment_dir> <post_event_segment_dir> <street_map_dir> <output_dir>')
 	sys.exit(0)
 
