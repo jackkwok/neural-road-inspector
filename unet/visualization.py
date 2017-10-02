@@ -5,7 +5,7 @@ import numpy as np
 
 def trainingHistoryPlot(title, file_path, history):
 	"""
-		Plot training stats (training/validation accuricy and loss) over time 
+		Save a plot of training stats (training/validation accuricy and loss) over time 
 
 		Parameters:
 			title: title shown on the graph
@@ -39,7 +39,7 @@ def trainingHistoryPlot(title, file_path, history):
 
 def plotValLoss(title, file_path, history):
 	"""
-		Plot training stats (training/validation accuricy and loss) over time 
+		Save a plot of training stats (training/validation loss) over time 
 
 		Parameters:
 			model_id: used for showing as title of the graph
