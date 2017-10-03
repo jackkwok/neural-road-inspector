@@ -54,14 +54,14 @@
 	var mymap = L.map('mapid', {
 		maxBounds: bounds,
   		maxBoundsViscosity: 1.0
-	}).setView([29.82843, -95.0744], 16);
+	}).setView([29.82843, -95.0744], 15);
 
 	mymap.options.maxZoom = 18;
 	mymap.options.minZoom = 14;
 
 	var local_tiles_root = 'file:///Users/jkwok/Documents/Insight/tools/jTileDownloader 2/digitalglobe/'
 	var web_tiles_root = 'tiles/'
-	var tiles_root = local_tiles_root
+	var tiles_root = web_tiles_root
 
 	var pre_hurricane = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}', {
 		maxZoom: 18,
