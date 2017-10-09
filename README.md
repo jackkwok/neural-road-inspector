@@ -28,9 +28,9 @@ Command to train the model:
 
 > python RoadSegmentor.py [config file]
 
-You must create a config file to point to your datasets and specify neural network training hyper-parameters.  The config file contains paths to the training images and model training parameters.  See cfg/default.cfg for an example.
+You must provide a config file containing file paths to the training datasets along with neural network training hyper-parameters.  See cfg/default.cfg for an example.
 
-In your configuration file, specify the relative or absolute path to your training data.  You must also supply a plaintext file listing satellite image relative filepath under column label 'img'.  See data/tile_log.csv for an example.
+You must also supply a plaintext file listing satellite image relative filepath under column label 'img'.  See data/tile_log.csv for an example.
 
 With a Nvidia Quadro P5000 GPU (16MB GPU RAM), training with a batch size of 16 took about 5 hours on a dataset with about 9000 images.
 
@@ -46,7 +46,7 @@ Command line tool:
 
 > python roadSegmentationMaskGen.py [satellite_images_dir] [output_dir] [keras_model_filepath]
 
-Note: If you use my pre-trained Keras/Tensorflow model, input images must be 512x512.
+Note: If you use my pre-trained Keras/Tensorflow model, input images must be sized 512x512.
 
 ## Generating Annotated Map Tiles
 
@@ -58,9 +58,10 @@ This project comes with a command line tool that generates a pyramid hierarchy o
 
 ### Demo
 
-Embed here if possible!
+[Demo](http://road.planetai.org/map.html)
 
 ### License
+
 Code: MIT License
 
 Road Segmentation Weight File: CC-BY-SA
@@ -68,4 +69,5 @@ Road Segmentation Weight File: CC-BY-SA
 Map Artifacts: CC-BY-SA
 
 ### Disclaimer
-This project is for research purposes only.  Further testing and improvement is needed for real world use.
+
+This project should be used for research purposes only.  Further testing and improvement is needed for use in the field.
