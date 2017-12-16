@@ -3,6 +3,8 @@ Devastating hurricanes are occurring with higher frequency due to global climate
 
 Using state of the art deep learning methods, I attempted to automatically annotate flooded, washed out, or otherwise severely damaged roads.  My goal is create a tool that can help detect and visualize anomalous roads in a simple user interface.
 
+For details, please read [Blog](https://blog.insightdatascience.com/deep-learning-for-disaster-recovery-45c8cd174d7a)
+
 # Getting Started
 ## Prerequisites
 
