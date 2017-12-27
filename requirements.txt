@@ -1,3 +1,4 @@
+numpy==1.13.3
 configparser==3.5.0b2
 Keras==2.0.8
 mapbox==0.14.0
